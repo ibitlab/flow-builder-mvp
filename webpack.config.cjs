@@ -25,6 +25,8 @@ module.exports = {
   devServer: {
     static: path.resolve(__dirname, "build"),
     port: 3000,
+    // hot: false, // Disable HMR
+    // liveReload: true, // Force full reload
     open: true,
   },
 };
