@@ -1,4 +1,4 @@
-import { Canvas, Rect, FabricText, Line, Group } from "fabric";
+import { Canvas, Rect, FabricText, Line, Triangle, Group } from "fabric";
 
 const canvasEl = document.getElementById("canvasFlow");
 
@@ -108,12 +108,27 @@ function connectNodes(from, to) {
     {
       stroke: "black",
       strokeWidth: 2,
-      selectable: false, // Prevent user interaction with the line
+      selectable: false,
     },
   );
 
-  canvas.add(line);
-  connections.push({ from, to, line });
+  // Calculate arrowhead position and rotation
+  const angle =
+    Math.atan2(to.top - from.top, to.left - from.left) * (180 / Math.PI);
+
+  const arrow = new Triangle({
+    left: to.left + 60,
+    top: to.top + 30,
+    width: 12,
+    height: 16,
+    fill: "black",
+    angle: angle + 90, // Adjust to align with the line direction
+    originX: "center",
+    originY: "center",
+  });
+
+  canvas.add(line, arrow);
+  connections.push({ from, to, line, arrow });
 }
 
 canvas.on("object:moving", function (event) {
@@ -131,10 +146,24 @@ function updateConnections(movedObject) {
         x2: conn.to.left + 60,
         y2: conn.to.top + 30,
       });
-      conn.line.setCoords(); // Ensure correct positioning
+      conn.line.setCoords();
+
+      // Update arrow position
+      conn.arrow.set({
+        left: conn.to.left + 60,
+        top: conn.to.top + 30,
+        angle:
+          Math.atan2(
+            conn.to.top - conn.from.top,
+            conn.to.left - conn.from.left,
+          ) *
+            (180 / Math.PI) +
+          90,
+      });
+      conn.arrow.setCoords();
     }
   });
-  canvas.renderAll(); // Refresh canvas
+  canvas.renderAll();
 }
 
 // Function to create a flowchart node
