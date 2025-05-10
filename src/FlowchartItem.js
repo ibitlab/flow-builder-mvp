@@ -19,6 +19,7 @@ export class FlowchartItem {
     this.node = createNode(text, 120, 60, left, top);
 
     // Prepare a property to hold our connection points.
+    // TODO move out
     this.node.connectionPoints = [];
 
     // Bind events.
@@ -27,7 +28,8 @@ export class FlowchartItem {
     this.node.on("moving", () => this.onMoving());
 
     // Add the node to the canvas.
-    this.manager.canvas.add(this.node);
+    // TODO TBD move out?
+    // this.manager.canvas.add(this.node);
   }
 
   /** Clean up and remove node properly */
@@ -49,8 +51,8 @@ export class FlowchartItem {
     }
 
     // Remove node from canvas
-    this.manager.canvas.remove(this.node);
-    this.manager.canvas.requestRenderAll();
+    // this.manager.canvas.remove(this.node);
+    // this.manager.canvas.requestRenderAll();
   }
 
   onMouseOut(e) {

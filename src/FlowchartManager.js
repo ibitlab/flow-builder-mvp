@@ -6,10 +6,11 @@ import {
   getAngleBetweenPoints,
   isInsideTargetZone,
   findClosestBluePoint,
+  removeItem,
 } from "./utils.js";
 
 import { FlowchartItem } from "./FlowchartItem.js";
-import { FlowchartConnection } from "./FlowcahrtConnection.js";
+import { FlowchartConnection } from "./FlowchartConnection.js";
 
 const chartDefaultConfig = {
   selection: true,
@@ -33,11 +34,11 @@ export class FlowchartManager {
       canvasId,
       Object.assign(chartDefaultConfig, config)
     );
-    // console.log("this.canvas=", this.canvas);
-    // Central state.
-    this.nodes = [];
+    this.items = [];
     this.connections = [];
+
     // Variables for interactive connection drawing.
+    // TODO review
     this.currentLine = null;
     this.connectionStartCircle = null;
     this.currentTargetBluePoints = [];
@@ -51,20 +52,26 @@ export class FlowchartManager {
     // this.canvas.on("selection:created", (e) => this.onSelectionCreated(e));
   }
 
-  // onObjectScaling() {
-  //   // const obj = event.target;
-  //   // // Ensure scaling is blocked for groups (multiple objects selected)
-  //   // if (obj.type === "activeSelection") {
-  //   //   obj.getObjects().forEach((item) => {
-  //   //     item.set({
-  //   //       scaleX: 1,
-  //   //       scaleY: 1,
-  //   //     });
-  //   //     item.setCoords(); // Ensure Fabric.js recalculates positions
-  //   //   });
-  //   //   this.canvas.requestRenderAll(); // Apply changes
-  //   // }
-  // }
+  addItem(item) {
+    this.items.push(item);
+    this.canvas.add(item.node);
+  }
+
+  deleteItem(item) {
+    item.destroy();
+    this.canvas.remove(item.node);
+    removeItem(this.items, item);
+
+    // TODO batch for multiple, in the future?
+    this.manager.canvas.requestRenderAll();
+  }
+
+  // Create a node using the FlowchartItem class.
+  createItem(text, left, top) {
+    const item = new FlowchartItem(text, left, top, this);
+    this.addItem(item);
+    return item;
+  }
 
   onObjectScaling() {
     const activeObject = this.canvas.getActiveObject();
@@ -143,20 +150,13 @@ export class FlowchartManager {
     });
   }
 
-  // Create a node using the FlowchartNode class.
-  createNode(text, left, top) {
-    const nodeObj = new FlowchartItem(text, left, top, this);
-    this.nodes.push(nodeObj.node);
-    return nodeObj.node;
-  }
-
   // Finalize connection on mouse up.
   onMouseUp(e) {
     if (this.currentLine) {
       const pointer = this.canvas.getPointer(e.e);
       let targetNode = null;
       // Search for a target node (not the source) within an expanded target zone.
-      this.nodes.forEach((node) => {
+      this.items.forEach(({ node }) => {
         if (
           this.connectionStartCircle &&
           node === this.connectionStartCircle.nodeParent
@@ -228,7 +228,7 @@ export class FlowchartManager {
     // Determine the closest target node (if any) under the pointer, ignoring the source.
     let closestTarget = null;
     let minDist = Infinity;
-    this.nodes.forEach((node) => {
+    this.items.forEach(({ node }) => {
       if (
         this.connectionStartCircle &&
         node === this.connectionStartCircle.nodeParent
