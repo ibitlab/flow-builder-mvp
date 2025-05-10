@@ -12,6 +12,7 @@ module.exports = {
     filename: "bundle.js",
   },
   mode: "development",
+  stats: "errors-warnings", // Ensure only errors & warnings show
   module: {
     rules: [
       { test: /\.js$/, exclude: /node_modules/, use: "babel-loader" },
@@ -20,25 +21,31 @@ module.exports = {
     ],
   },
   plugins: [
-    new HtmlWebpackPlugin({ template: "./public/index.html" }),
+    new HtmlWebpackPlugin({
+      template: "./public/index.html",
+      // scriptLoading: "blocking",
+      // inject: true, // Ensures Webpack injects scripts
+    }),
     new CleanWebpackPlugin(),
     new MiniCssExtractPlugin({ filename: "styles.css" }),
-  ],
-  watch: true,
-  devServer: {
-    static: path.resolve(__dirname, "build"),
-    port: 3000,
-    open: true,
-    hot: true,
-    liveReload: true,
-    watchFiles: ["src/**/*"], // Ensures Webpack watches your source files
-  },
-
-  plugins: [
     new ESLintPlugin({
       extensions: ["js", "ts"],
       emitWarning: true,
       failOnError: false, // Prevents Webpack from stopping
     }),
   ],
+  watch: true,
+  devServer: {
+    static: path.resolve(__dirname, "build"),
+    // static: {
+    //   directory: path.resolve(__dirname, "public"), // Serve from `public`
+    //   // serveIndex: true, // Allow serving files directly
+    // },
+    historyApiFallback: true, // Ensures `index.html` is served instead of a file listing
+    port: 3000,
+    open: true,
+    hot: true,
+    liveReload: true,
+    watchFiles: ["src/**/*"], // Ensures Webpack watches your source files
+  },
 };
