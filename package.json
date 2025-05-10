@@ -1,8 +1,7 @@
 {
   "scripts": {
-    "start0": "webpack serve --mode development --stats errors-warnings",
-    "start": "webpack",
-    "build": "webpack --mode production",
+    "start": "webpack serve --config webpack.dev.js",
+    "build": "webpack --config webpack.prod.js",
     "prepare": "husky",
     "lint": "eslint --ext .js,.ts src",
     "lint:watch": "eslint --ext .js,.ts src --watch",
