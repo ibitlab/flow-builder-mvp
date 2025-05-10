@@ -1,12 +1,15 @@
+import { Canvas, Circle, Line } from "fabric";
+
 import {
-  Canvas,
-  Rect,
-  FabricText,
-  Line,
-  Circle,
-  Triangle,
-  Group,
-} from "fabric";
+  getDistance,
+  getCenter,
+  getAngleBetweenPoints,
+  isInsideTargetZone,
+  findClosestBluePoint,
+} from "./utils.js";
+
+import { FlowchartNode } from "./FlowchartNode.js";
+import { FlowchartConnection } from "./FlowcahrtConnection.js";
 
 const chartDefaultConfig = {
   selection: true,
@@ -15,37 +18,51 @@ const chartDefaultConfig = {
   width: 800,
   height: 500,
 };
-
+/* ============================
+   FlowchartManager Class Module
+   ============================
+   Responsibilities:
+   • Manage a Fabric canvas and maintain a state of nodes and connections.
+   • Coordinate interaction between nodes and delegate events.
+   • Handle temporary drawing of connections using mouse events.
+--------------------------------- */
 export class FlowchartManager {
   constructor(canvasId, config = {}) {
-    // Initialize Fabric canvas using a config object to centralize settings.
+    // Initialize Fabric canvas using a configuration object.
     this.canvas = new Canvas(
       canvasId,
       Object.assign(chartDefaultConfig, config)
     );
-
     console.log("this.canvas=", this.canvas);
-
-    // State arrays.
+    // Central state.
     this.nodes = [];
     this.connections = [];
-
-    // Variables for interactive connections.
+    // Variables for interactive connection drawing.
     this.currentLine = null;
     this.connectionStartCircle = null;
     this.currentTargetBluePoints = [];
     this.animationFrameId = null;
 
-    // Bind event handlers for updating during dragging.
+    // Bind canvas events.
     this.canvas.on("mouse:move", (e) => this.onMouseMove(e));
     this.canvas.on("mouse:up", (e) => this.onMouseUp(e));
     this.canvas.on("object:moving", (e) => this.onObjectMoving(e));
   }
 
   onObjectMoving(event) {
-    console.log("Item movement");
+    // When a node moves, update any connected lines.
     const movedObject = event.target;
     this.updateConnections(movedObject);
+
+    // const movedObject = event.target;
+
+    // // Hide connection points when dragging any node
+    // if (movedObject.connectionPoints) {
+    //   this.hideConnectionPoints(movedObject);
+    // }
+
+    // // Update any connections related to the moved object
+    // this.updateConnections(movedObject);
   }
 
   updateConnections(movedObject) {
@@ -58,18 +75,18 @@ export class FlowchartManager {
           y2: conn.to.top + 30,
         });
         conn.line.setCoords();
-
-        // Update arrow position
+        // Update arrow position.
         conn.arrow.set({
           left: conn.to.left + 60,
           top: conn.to.top + 30,
-          angle:
-            Math.atan2(
-              conn.to.top - conn.from.top,
-              conn.to.left - conn.from.left
-            ) *
-              (180 / Math.PI) +
-            90,
+          angle: getAngleBetweenPoints(conn.from, conn.to),
+
+          // Math.atan2(
+          //   conn.to.top - conn.from.top,
+          //   conn.to.left - conn.from.left
+          // ) *
+          //   (180 / Math.PI) +
+          // 90,
         });
         conn.arrow.setCoords();
       }
@@ -77,173 +94,7 @@ export class FlowchartManager {
     this.canvas.renderAll();
   }
 
-  // Create a node (group of a rectangle and a centered text label).
-  createNode(text, left, top) {
-    const rect = new Rect({
-      width: 120,
-      height: 60,
-      fill: "lightblue",
-      stroke: "black",
-      strokeWidth: 2,
-      rx: 10, // Rounded corners
-      ry: 10,
-    });
-
-    // Create a text label and manually offset it to the center of the rect.
-    const label = new FabricText(text, {
-      fontSize: 16,
-      fill: "black",
-      originX: "center",
-      originY: "center",
-      left: rect.width / 2,
-      top: rect.height / 2,
-    });
-
-    // Group the rectangle and text.
-    const node = new Group([rect, label], {
-      left,
-      top,
-      selectable: true,
-      lockScalingX: true,
-      lockScalingY: true,
-      lockRotation: true,
-      hasControls: false,
-      subTargetCheck: true, // Allows child objects (e.g. connection circles) to receive events.
-    });
-
-    // When hovering, show the red connection circles.
-    node.on("mouseover", () => {
-      this.showConnectionPoints(node);
-    });
-
-    // On mouse out, hide them—but only if the mouse isn’t over one of the connection points.
-    node.on("mouseout", (e) => {
-      setTimeout(() => {
-        if (!this.isHoveringOverChild(node, e)) {
-          this.hideConnectionPoints(node);
-        }
-      }, 200);
-    });
-
-    // Hide connection points when dragging.
-    node.on("moving", () => {
-      this.hideConnectionPoints(node);
-    });
-
-    // Add node to canvas and state.
-    this.canvas.add(node);
-    this.nodes.push(node);
-    return node;
-  }
-
-  connectNodes(from, to) {
-    const line = new Line(
-      [from.left + 60, from.top + 30, to.left + 60, to.top + 30],
-      {
-        stroke: "black",
-        strokeWidth: 2,
-        selectable: false,
-      }
-    );
-
-    // Calculate arrowhead position and rotation
-    const angle =
-      Math.atan2(to.top - from.top, to.left - from.left) * (180 / Math.PI);
-
-    const arrow = new Triangle({
-      left: to.left + 60,
-      top: to.top + 30,
-      width: 12,
-      height: 16,
-      fill: "black",
-      angle: angle + 90, // Adjust to align with the line direction
-      originX: "center",
-      originY: "center",
-    });
-
-    this.canvas.add(line, arrow);
-    this.connections.push({ from, to, line, arrow });
-  }
-
-  // Display red connection circles on the node’s edges.
-  showConnectionPoints(node) {
-    // Remove any existing connection points.
-    this.hideConnectionPoints(node);
-    const bounds = node.getBoundingRect();
-
-    // Compute positions for top, left, right, bottom.
-    const positions = [
-      { x: bounds.left + bounds.width / 2, y: bounds.top, edge: "top" },
-      { x: bounds.left, y: bounds.top + bounds.height / 2, edge: "left" },
-      {
-        x: bounds.left + bounds.width,
-        y: bounds.top + bounds.height / 2,
-        edge: "right",
-      },
-      {
-        x: bounds.left + bounds.width / 2,
-        y: bounds.top + bounds.height,
-        edge: "bottom",
-      },
-    ];
-
-    node.connectionPoints = [];
-    positions.forEach((pt) => {
-      const circle = new Circle({
-        left: pt.x,
-        top: pt.y,
-        radius: 5,
-        fill: "red",
-        stroke: "black",
-        strokeWidth: 1,
-        selectable: false, // Prevent dragging/selection
-        evented: true, // Allow clicks to start a connection arrow.
-        originX: "center",
-        originY: "center",
-      });
-      circle.edge = pt.edge;
-      circle.nodeParent = node;
-
-      // When mousedown on a red circle, stop other events and begin drawing a connection.
-      circle.on("mousedown", (e) => {
-        e.e.stopPropagation();
-        // Temporarily disable the node’s selectability.
-        circle.nodeParent.selectable = false;
-        this.canvas.selection = false;
-        this.connectionStartCircle = circle;
-
-        const pointer = this.canvas.getPointer(e.e);
-        this.currentLine = new Line(
-          [pointer.x, pointer.y, pointer.x, pointer.y],
-          {
-            stroke: "black",
-            strokeWidth: 2,
-            selectable: false,
-          }
-        );
-        this.canvas.add(this.currentLine);
-      });
-
-      // Prevent the red circle from stealing focus.
-      circle.on("mouseover", (e) => {
-        e.e.stopPropagation();
-        this.canvas.discardActiveObject();
-        this.canvas.requestRenderAll();
-      });
-
-      this.canvas.add(circle);
-      node.connectionPoints.push(circle);
-    });
-  }
-  // Remove all red connection circles from a node.
-  hideConnectionPoints(node) {
-    if (node.connectionPoints) {
-      node.connectionPoints.forEach((cp) => this.canvas.remove(cp));
-      node.connectionPoints = [];
-    }
-  }
-
-  // Check if, at mouseout, the pointer is over one of the node’s child connection points.
+  // A helper used by node events to check if the pointer is over one of the node's children.
   isHoveringOverChild(node, event) {
     const pointer = this.canvas.getPointer(event.e);
     return (node.connectionPoints || []).some((cp) => {
@@ -257,72 +108,36 @@ export class FlowchartManager {
     });
   }
 
-  // Update events during mouse move.
-  onMouseMove(e) {
-    const pointer = this.canvas.getPointer(e.e);
-
-    // Update the drawn connection line using requestAnimationFrame for smoother performance.
-    if (this.currentLine) {
-      if (this.animationFrameId) cancelAnimationFrame(this.animationFrameId);
-      this.animationFrameId = requestAnimationFrame(() => {
-        this.currentLine.set({ x2: pointer.x, y2: pointer.y });
-        this.currentLine.setCoords();
-        this.canvas.requestRenderAll();
-      });
-    }
-
-    // Look for a target node (closest one) under the pointer (ignoring the source node).
-    let closestTarget = null;
-    let minDist = Infinity;
-    this.nodes.forEach((node) => {
-      if (
-        this.connectionStartCircle &&
-        node === this.connectionStartCircle.nodeParent
-      )
-        return;
-      if (this.isInsideTargetZone(pointer, node)) {
-        const bounds = node.getBoundingRect();
-        const centerX = bounds.left + bounds.width / 2;
-        const centerY = bounds.top + bounds.height / 2;
-        const dist = Math.hypot(pointer.x - centerX, pointer.y - centerY);
-        if (dist < minDist) {
-          minDist = dist;
-          closestTarget = node;
-        }
-      }
-    });
-
-    if (closestTarget && this.currentTargetBluePoints.length === 0) {
-      this.currentTargetBluePoints =
-        this.showTargetConnectionPoints(closestTarget);
-    } else if (!closestTarget && this.currentTargetBluePoints.length > 0) {
-      this.removeTargetConnectionPoints(this.currentTargetBluePoints);
-      this.currentTargetBluePoints = [];
-    }
+  // Create a node using the FlowchartNode class.
+  createNode(text, left, top) {
+    const nodeObj = new FlowchartNode(text, left, top, this);
+    this.nodes.push(nodeObj.node);
+    return nodeObj.node;
   }
 
-  // Finalize the connection on mouse up.
+  // Finalize connection on mouse up.
   onMouseUp(e) {
     if (this.currentLine) {
       const pointer = this.canvas.getPointer(e.e);
       let targetNode = null;
-
-      // Identify a target node (if any) where the pointer is.
+      // Search for a target node (not the source) within an expanded target zone.
       this.nodes.forEach((node) => {
         if (
           this.connectionStartCircle &&
           node === this.connectionStartCircle.nodeParent
         )
           return;
-        if (this.isInsideTargetZone(pointer, node)) {
+        if (isInsideTargetZone(pointer, node)) {
           targetNode = node;
         }
       });
 
       if (targetNode && this.currentTargetBluePoints.length > 0) {
-        // Find the closest blue point to the pointer.
+        // Find the closest blue point.
         let closestPoint = null;
         let minDist = Infinity;
+
+        // TODO extract
         this.currentTargetBluePoints.forEach((bp) => {
           const dx = bp.left - pointer.x;
           const dy = bp.top - pointer.y;
@@ -334,91 +149,86 @@ export class FlowchartManager {
         });
 
         if (closestPoint) {
-          // Snap line end to the closest blue point.
-          this.currentLine.set({
-            x2: closestPoint.left,
-            y2: closestPoint.top,
-          });
-          this.currentLine.setCoords();
-
-          // Create the arrowhead.
-          const angle =
-            (Math.atan2(
-              this.currentLine.y2 - this.currentLine.y1,
-              this.currentLine.x2 - this.currentLine.x1
-            ) *
-              180) /
-              Math.PI +
-            90;
-          const arrow = new Triangle({
-            left: closestPoint.left,
-            top: closestPoint.top,
-            width: 12,
-            height: 16,
-            fill: "black",
-            originX: "center",
-            originY: "center",
-            angle: angle,
-            selectable: false,
-          });
-          this.canvas.add(arrow);
-
-          // Save the connection info.
-          this.connections.push({
-            from: this.connectionStartCircle.nodeParent,
-            to: targetNode,
-            line: this.currentLine,
-            arrow: arrow,
-          });
+          // Instantiate a FlowchartConnection to finalize the arrow.
+          new FlowchartConnection(
+            this,
+            this.connectionStartCircle.nodeParent,
+            targetNode,
+            this.currentLine,
+            closestPoint
+          );
         }
       } else {
-        // No valid target found: remove the temporary line.
+        // If no valid target was found, remove the temporary line.
         this.canvas.remove(this.currentLine);
       }
 
-      // Clean up blue connection points.
+      // Clean up temporary blue connection points.
       if (this.currentTargetBluePoints.length > 0) {
-        this.removeTargetConnectionPoints(this.currentTargetBluePoints);
-        this.currentTargetBluePoints = [];
+        this.removeTargetConnectionPoints();
       }
       // Re-enable selection on the source node.
       if (this.connectionStartCircle && this.connectionStartCircle.nodeParent) {
         this.connectionStartCircle.nodeParent.selectable = true;
       }
       this.canvas.selection = true;
-
-      // Clear temporary connection state.
       this.currentLine = null;
       this.connectionStartCircle = null;
       this.canvas.requestRenderAll();
     }
   }
-  // Check if the pointer is inside a node’s (expanded) target zone.
-  isInsideTargetZone(pointer, node) {
-    const bounds = node.getBoundingRect();
-    const padding = 20; // Increase this value to expand detection zone.
-    return (
-      pointer.x >= bounds.left - padding &&
-      pointer.x <= bounds.left + bounds.width + padding &&
-      pointer.y >= bounds.top - padding &&
-      pointer.y <= bounds.top + bounds.height + padding
-    );
+
+  // Use requestAnimationFrame to update the temporary connection line smoothly.
+  onMouseMove(e) {
+    const pointer = this.canvas.getPointer(e.e);
+    if (this.currentLine) {
+      if (this.animationFrameId) cancelAnimationFrame(this.animationFrameId);
+      this.animationFrameId = requestAnimationFrame(() => {
+        this.currentLine.set({ x2: pointer.x, y2: pointer.y });
+        this.currentLine.setCoords();
+        this.canvas.requestRenderAll();
+      });
+    }
+
+    // Determine the closest target node (if any) under the pointer, ignoring the source.
+    let closestTarget = null;
+    let minDist = Infinity;
+    this.nodes.forEach((node) => {
+      if (
+        this.connectionStartCircle &&
+        node === this.connectionStartCircle.nodeParent
+      )
+        return;
+      if (isInsideTargetZone(pointer, node)) {
+        // const bounds = node.getBoundingRect();
+        // const centerX = bounds.left + bounds.width / 2;
+        // const centerY = bounds.top + bounds.height / 2;
+        // const dist = Math.hypot(pointer.x - centerX, pointer.y - centerY);
+        const center = getCenter(node);
+        const dist = getDistance(pointer, center);
+        if (dist < minDist) {
+          minDist = dist;
+          closestTarget = node;
+        }
+      }
+    });
+
+    if (closestTarget && this.currentTargetBluePoints.length === 0) {
+      this.currentTargetBluePoints =
+        this.showTargetConnectionPoints(closestTarget);
+    } else if (!closestTarget && this.currentTargetBluePoints.length > 0) {
+      this.removeTargetConnectionPoints();
+    }
   }
 
-  // Display blue connection circles on the target node.
+  // Show blue connection circles on the target node.
   showTargetConnectionPoints(node) {
     const bounds = node.getBoundingRect();
     const positions = [
       { x: bounds.left + bounds.width / 2, y: bounds.top },
       { x: bounds.left, y: bounds.top + bounds.height / 2 },
-      {
-        x: bounds.left + bounds.width,
-        y: bounds.top + bounds.height / 2,
-      },
-      {
-        x: bounds.left + bounds.width / 2,
-        y: bounds.top + bounds.height,
-      },
+      { x: bounds.left + bounds.width, y: bounds.top + bounds.height / 2 },
+      { x: bounds.left + bounds.width / 2, y: bounds.top + bounds.height },
     ];
 
     let bluePoints = [];
@@ -439,8 +249,38 @@ export class FlowchartManager {
     return bluePoints;
   }
 
-  // Remove blue circles from the canvas.
-  removeTargetConnectionPoints(points) {
-    points.forEach((p) => this.canvas.remove(p));
+  // Remove blue connection indicators.
+  removeTargetConnectionPoints() {
+    this.currentTargetBluePoints?.forEach((p) => this.canvas.remove(p));
+    this.currentTargetBluePoints = [];
+  }
+
+  connectNodes(fromNode, toNode) {
+    // Find the closest blue connection point on the target node.
+    const closestPoint = findClosestBluePoint(toNode);
+
+    if (!closestPoint) {
+      console.warn("No valid connection point found.");
+      return;
+    }
+
+    // Create a temporary line.
+    const tempLine = new Line(
+      [
+        fromNode.left + 60,
+        fromNode.top + 30,
+        closestPoint.left,
+        closestPoint.top,
+      ],
+      {
+        stroke: "black",
+        strokeWidth: 2,
+        selectable: false,
+      }
+    );
+    this.canvas.add(tempLine);
+
+    // Use the FlowchartConnection class to finalize the connection.
+    new FlowchartConnection(this, fromNode, toNode, tempLine, closestPoint);
   }
 }
