@@ -3,6 +3,8 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
+const ESLintPlugin = require("eslint-webpack-plugin");
+
 module.exports = {
   entry: "./src/index.js",
   output: {
@@ -22,11 +24,21 @@ module.exports = {
     new CleanWebpackPlugin(),
     new MiniCssExtractPlugin({ filename: "styles.css" }),
   ],
+  watch: true,
   devServer: {
     static: path.resolve(__dirname, "build"),
     port: 3000,
-    // hot: false, // Disable HMR
-    // liveReload: true, // Force full reload
     open: true,
+    hot: true,
+    liveReload: true,
+    watchFiles: ["src/**/*"], // Ensures Webpack watches your source files
   },
+
+  plugins: [
+    new ESLintPlugin({
+      extensions: ["js", "ts"],
+      emitWarning: true,
+      failOnError: false, // Prevents Webpack from stopping
+    }),
+  ],
 };
