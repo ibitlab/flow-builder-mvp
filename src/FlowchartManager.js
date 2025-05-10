@@ -8,7 +8,7 @@ import {
   findClosestBluePoint,
 } from "./utils.js";
 
-import { FlowchartNode } from "./FlowchartNode.js";
+import { FlowchartItem } from "./FlowchartItem.js";
 import { FlowchartConnection } from "./FlowcahrtConnection.js";
 
 const chartDefaultConfig = {
@@ -33,7 +33,7 @@ export class FlowchartManager {
       canvasId,
       Object.assign(chartDefaultConfig, config)
     );
-    console.log("this.canvas=", this.canvas);
+    // console.log("this.canvas=", this.canvas);
     // Central state.
     this.nodes = [];
     this.connections = [];
@@ -47,6 +47,41 @@ export class FlowchartManager {
     this.canvas.on("mouse:move", (e) => this.onMouseMove(e));
     this.canvas.on("mouse:up", (e) => this.onMouseUp(e));
     this.canvas.on("object:moving", (e) => this.onObjectMoving(e));
+    this.canvas.on("object:scaling", (e) => this.onObjectScaling(e));
+    // this.canvas.on("selection:created", (e) => this.onSelectionCreated(e));
+  }
+
+  // onObjectScaling() {
+  //   // const obj = event.target;
+  //   // // Ensure scaling is blocked for groups (multiple objects selected)
+  //   // if (obj.type === "activeSelection") {
+  //   //   obj.getObjects().forEach((item) => {
+  //   //     item.set({
+  //   //       scaleX: 1,
+  //   //       scaleY: 1,
+  //   //     });
+  //   //     item.setCoords(); // Ensure Fabric.js recalculates positions
+  //   //   });
+  //   //   this.canvas.requestRenderAll(); // Apply changes
+  //   // }
+  // }
+
+  onObjectScaling() {
+    const activeObject = this.canvas.getActiveObject();
+    console.dir(activeObject);
+    if (!activeObject) return; // Ensure an object is selected
+
+    // If multiple objects are selected, reset their scaling
+    if (activeObject._objects) {
+      activeObject._objects.forEach((item) => {
+        item.set({
+          scaleX: 1,
+          scaleY: 1,
+        });
+        item.setCoords();
+      });
+      this.canvas.requestRenderAll();
+    }
   }
 
   onObjectMoving(event) {
@@ -110,7 +145,7 @@ export class FlowchartManager {
 
   // Create a node using the FlowchartNode class.
   createNode(text, left, top) {
-    const nodeObj = new FlowchartNode(text, left, top, this);
+    const nodeObj = new FlowchartItem(text, left, top, this);
     this.nodes.push(nodeObj.node);
     return nodeObj.node;
   }
@@ -255,6 +290,7 @@ export class FlowchartManager {
     this.currentTargetBluePoints = [];
   }
 
+  // TODO rework it. we need support 4 points
   connectNodes(fromNode, toNode) {
     // Find the closest blue connection point on the target node.
     const closestPoint = findClosestBluePoint(toNode);

@@ -1,7 +1,8 @@
-import { Rect, FabricText, Line, Circle, Group } from "fabric";
+import { Line, Circle } from "fabric";
+import { createNode } from "./fabricUtils.js";
 
 /* ============================
-   FlowchartNode Class Module
+   FlowchartItem Class Module
    ============================
    Responsibilities:
    • Encapsulate a node’s creation (rectangle + centered text)
@@ -10,67 +11,59 @@ import { Rect, FabricText, Line, Circle, Group } from "fabric";
    • Bind those events so the central manager’s utilities (e.g. isHoveringOverChild)
      can also be used.
 --------------------------------- */
-export class FlowchartNode {
+export class FlowchartItem {
   constructor(text, left, top, manager) {
     // Save a reference to the manager (to access the Fabric canvas, etc.)
     this.manager = manager;
 
-    // Create the base rectangle.
-    const rect = new Rect({
-      width: 120,
-      height: 60,
-      fill: "lightblue",
-      stroke: "black",
-      strokeWidth: 2,
-      rx: 10,
-      ry: 10,
-    });
-
-    // Create a text label, positioning it at the center of the rect.
-    const label = new FabricText(text, {
-      fontSize: 16,
-      fill: "black",
-      originX: "center",
-      originY: "center",
-      left: rect.width / 2,
-      top: rect.height / 2,
-    });
-
-    // Group them together.
-    this.node = new Group([rect, label], {
-      left,
-      top,
-      selectable: true,
-      lockScalingX: true,
-      lockScalingY: true,
-      lockRotation: true,
-      hasControls: false,
-      subTargetCheck: true,
-    });
+    this.node = createNode(text, 120, 60, left, top);
 
     // Prepare a property to hold our connection points.
     this.node.connectionPoints = [];
 
     // Bind events.
-    this.node.on("mouseover", () => {
-      this.showConnectionPoints();
-    });
-
-    this.node.on("mouseout", (e) => {
-      setTimeout(() => {
-        if (!this.manager.isHoveringOverChild(this.node, e)) {
-          this.hideConnectionPoints();
-        }
-      }, 200);
-    });
-
-    this.node.on("moving", () => {
-      this.hideConnectionPoints();
-      this.manager.removeTargetConnectionPoints();
-    });
+    this.node.on("mouseover", () => this.showConnectionPoints());
+    this.node.on("mouseout", (e) => this.onMouseOut(e));
+    this.node.on("moving", () => this.onMoving());
 
     // Add the node to the canvas.
     this.manager.canvas.add(this.node);
+  }
+
+  /** Clean up and remove node properly */
+  destroy() {
+    // Remove event listeners
+    this.node.off("mouseover");
+    this.node.off("mouseout");
+    this.node.off("moving");
+
+    // Remove connection points
+    // TODO move this into separate points component
+    // TODO remove all connections
+    if (this.node.connectionPoints) {
+      this.node.connectionPoints.forEach((cp) => cp.off("mousedown"));
+      this.node.connectionPoints.forEach((cp) =>
+        this.manager.canvas.remove(cp)
+      );
+      this.node.connectionPoints = [];
+    }
+
+    // Remove node from canvas
+    this.manager.canvas.remove(this.node);
+    this.manager.canvas.requestRenderAll();
+  }
+
+  onMouseOut(e) {
+    setTimeout(() => {
+      if (!this.manager.isHoveringOverChild(this.node, e)) {
+        this.hideConnectionPoints();
+      }
+    }, 200);
+  }
+
+  onMoving() {
+    this.hideConnectionPoints();
+    this.manager.removeTargetConnectionPoints();
   }
 
   // Create and show red connection circles along the node’s edges.
