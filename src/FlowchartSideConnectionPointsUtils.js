@@ -1,4 +1,5 @@
 import { Line, Circle } from "fabric";
+import { CircleConfigDefault } from "./const.js";
 
 export const Edge = {
   TOP: "top",
@@ -49,16 +50,9 @@ export const getEdgePositions = (bounds, space = 5) => {
   ];
 };
 
-export const circleConfigDefault = {
-  radius: 5,
-  fill: "rgba(128, 188, 254, 0.6)",
-  stroke: "black",
-  strokeWidth: 1,
-};
-
 export const createCircle = (pt) => {
   const circle = new Circle({
-    ...circleConfigDefault,
+    ...CircleConfigDefault,
     left: pt.x,
     top: pt.y,
     selectable: false, // not draggable/selected
@@ -85,4 +79,12 @@ export const createCircle = (pt) => {
   // });
 
   return circle;
+};
+
+export const isConnectionPoint = (obj) => {
+  return obj?.edge && obj?.sideConnectionPoints;
+};
+
+export const isFlowChartItemNode = (obj) => {
+  return obj?.flowchartItem;
 };

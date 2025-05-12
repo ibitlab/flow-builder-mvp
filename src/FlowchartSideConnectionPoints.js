@@ -1,6 +1,5 @@
 import {
   createCircle,
-  createLine,
   ItemBehaviorType,
 } from "./FlowchartSideConnectionPointsUtils.js";
 
@@ -15,6 +14,7 @@ export class FlowchartSideConnectionPoints {
     // // rethink this
     // this.connectionStartCircle = null;
     // this.currentLine = null;
+    this.initConnectionPoints();
   }
 
   isTarget() {
@@ -30,12 +30,9 @@ export class FlowchartSideConnectionPoints {
     // TODO points should be get from item points
     // const bounds = this.item.node.getBoundingRect();
     // Define positions for top, left, right, and bottom.
-    console.log("showConnectionPoints this.item=", this.item);
     const positions = this.item.connectionPoints; // getEdgePositions12323(bounds);
-    console.log("showConnectionPoints positions=", positions);
     positions.forEach((pt) => {
       const circle = createCircle(pt);
-      console.log("showConnectionPoints positions.forEach=", pt);
 
       circle.edge = pt.edge;
       // circle.nodeParent = this.item.node;
@@ -85,16 +82,14 @@ export class FlowchartSideConnectionPoints {
     }
   }
 
-  handlerStartCircleMouseDown(connectionCircle, pointer) {
-    // When you press down on the start circle, start a connection.
-    // if (!this.isTarget()) {
-    // Temporarily disable node dragging.
-    this.item.node.selectable = false;
-    this.manager.canvas.selection = false;
-    // Tell the manager which connection point we started at.
-    this.manager.connectionManager.connectionStartCircle = connectionCircle;
-    this.manager.connectionManager.currentLine = createLine(pointer);
-    this.manager.canvas.add(this.manager.connectionManager.currentLine);
-    // }
-  }
+  // handlerStartCircleMouseDown(connectionCircle, pointer) {
+  //   // When you press down on the start circle, start a connection.
+  //   // Temporarily disable node dragging.
+  //   this.item.node.selectable = false;
+  //   this.manager.canvas.selection = false;
+  //   // Tell the manager which connection point we started at.
+  //   this.manager.connectionManager.connectionStartCircle = connectionCircle;
+  //   this.manager.connectionManager.currentLine = createLine(pointer);
+  //   this.manager.canvas.add(this.manager.connectionManager.currentLine);
+  // }
 }

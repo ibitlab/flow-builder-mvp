@@ -1,4 +1,4 @@
-// import { Line, Circle } from "fabric";
+import { SpaceToConnectionPointCenter } from "./const.js";
 import { createNode } from "./fabricUtils.js";
 import { getEdgePositions } from "./FlowchartSideConnectionPointsUtils.js";
 
@@ -16,7 +16,7 @@ export class FlowchartItem {
 
     // this.onMouseover = this.onMouseover.bind(this);
     // this.onMouseOut = this.onMouseOut.bind(this);
-    // this.onMoving = this.onMoving.bind(this);
+    this.onMoving = this.onMoving.bind(this);
 
     this.attachEvents();
   }
@@ -26,19 +26,22 @@ export class FlowchartItem {
     const bounds = this.node.getBoundingRect();
     // Define positions for top, left, right, and bottom.
     // TODO move out const
-    this.connectionPoints = getEdgePositions(bounds, 8);
+    this.connectionPoints = getEdgePositions(
+      bounds,
+      SpaceToConnectionPointCenter
+    );
   }
 
   attachEvents() {
     // this.node.on("mouseover", this.onMouseover);
     // this.node.on("mouseout", this.onMouseOut);
-    // this.node.on("moving", this.onMoving);
+    this.node.on("moving", this.onMoving);
   }
 
   destroy() {
     // this.node.off("mouseover", this.onMouseover);
     // this.node.off("mouseout", this.onMouseOut);
-    // this.node.off("moving", this.onMoving);
+    this.node.off("moving", this.onMoving);
   }
 
   // onMouseOut(e) {
@@ -52,10 +55,11 @@ export class FlowchartItem {
   //   }, 200);
   // }
 
-  // onMoving() {
-  //   this.manager.connectionManager.hideStartConnectionPoints();
-  //   this.manager.connectionManager.hideTargetConnectionPoints();
-  // }
+  onMoving() {
+    this.prepareConnectionPoints();
+    // this.manager.connectionManager.hideStartConnectionPoints();
+    // this.manager.connectionManager.hideTargetConnectionPoints();
+  }
 
   // onMouseover() {
   //   console.log("FlowchartItem show start ConnectionPoints this.item=", this);

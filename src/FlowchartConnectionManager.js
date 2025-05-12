@@ -60,7 +60,7 @@ export class FlowchartConnectionManager {
   }
 
   showStartConnectionPoints(item) {
-    console.error("showStartConnectionPoints");
+    // console.error("showStartConnectionPoints");
     if (this.startSideConnectionPoints) {
       console.error("showStartConnectionPoints on existing starts node");
       this.hideStartConnectionPoints();
@@ -70,17 +70,15 @@ export class FlowchartConnectionManager {
       item,
       ItemBehaviorType.START
     );
-    this.startSideConnectionPoints.initConnectionPoints();
   }
 
   hideStartConnectionPoints() {
-    // TODO investigate when it was called and prevent call again
     this.startSideConnectionPoints?.destroy();
     this.startSideConnectionPoints = null;
   }
 
   showTargetConnectionPoints(item) {
-    console.error("showTargetConnectionPoints");
+    // console.error("showTargetConnectionPoints");
     if (this.targetSideConnectionPoints) {
       console.error("showTargetConnectionPoints on existing targets node");
       this.hideTargetConnectionPoints();
@@ -93,7 +91,6 @@ export class FlowchartConnectionManager {
   }
 
   hideTargetConnectionPoints() {
-    // TODO investigate when it was called and prevent call again
     this.targetSideConnectionPoints?.destroy();
     this.targetSideConnectionPoints = null;
   }
