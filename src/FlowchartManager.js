@@ -4,7 +4,6 @@ import * as styles from "./styles.module.css";
 import {
   getDistance,
   getCenter,
-  getAngleBetweenPoints,
   isInsideTargetZone,
   findClosestBluePoint,
   removeItem,
@@ -12,6 +11,11 @@ import {
 
 import { FlowchartItem } from "./FlowchartItem.js";
 import { FlowchartConnection } from "./FlowchartConnection.js";
+import { FlowchartConnectionManager } from "./FlowchartConnectionManager.js";
+import {
+  FlowchartSideConnectionPoints,
+  ItemInteractionType,
+} from "./FlowchartSideConnectionPoints.js";
 
 const chartDefaultConfig = {
   selection: true,
@@ -36,9 +40,17 @@ export class FlowchartManager {
       Object.assign(chartDefaultConfig, config)
     );
     this.items = [];
-    this.connections = [];
+    this.connectionManager = new FlowchartConnectionManager(this);
+    // init Side connection Points for Start and End Item
+    this.startSideConnectionPoints = new FlowchartSideConnectionPoints(
+      this,
+      ItemInteractionType.START
+    );
+    this.targetSideConnectionPoints = new FlowchartSideConnectionPoints(
+      this,
+      ItemInteractionType.TARGET
+    );
 
-    // Variables for interactive connection drawing.
     // TODO review
     this.currentLine = null;
     this.connectionStartCircle = null;
@@ -148,36 +160,12 @@ export class FlowchartManager {
   onObjectMoving(event) {
     // When a node moves, update any connected lines.
     const movedObject = event.target;
+    // TBD handle multiple object movement
     this.updateConnections(movedObject);
   }
 
   updateConnections(movedObject) {
-    this.connections.forEach((conn) => {
-      if (conn.from === movedObject || conn.to === movedObject) {
-        conn.line.set({
-          x1: conn.from.left + 60,
-          y1: conn.from.top + 30,
-          x2: conn.to.left + 60,
-          y2: conn.to.top + 30,
-        });
-        conn.line.setCoords();
-        // Update arrow position.
-        conn.arrow.set({
-          left: conn.to.left + 60,
-          top: conn.to.top + 30,
-          angle: getAngleBetweenPoints(conn.from, conn.to),
-
-          // Math.atan2(
-          //   conn.to.top - conn.from.top,
-          //   conn.to.left - conn.from.left
-          // ) *
-          //   (180 / Math.PI) +
-          // 90,
-        });
-        conn.arrow.setCoords();
-      }
-    });
-    this.canvas.requestRenderAll();
+    this.connectionManager.updateConnections(movedObject);
   }
 
   // A helper used by node events to check if the pointer is over one of the node's children.
@@ -229,8 +217,7 @@ export class FlowchartManager {
 
         if (closestPoint) {
           // Instantiate a FlowchartConnection to finalize the arrow.
-          new FlowchartConnection(
-            this,
+          this.connectionManager.addConnection(
             this.connectionStartCircle.nodeParent,
             targetNode,
             this.currentLine,
@@ -260,6 +247,31 @@ export class FlowchartManager {
   // Use requestAnimationFrame to update the temporary connection line smoothly.
   onMouseMove(e) {
     const pointer = this.canvas.getPointer(e.e);
+
+    // if (blueCircle.containsPoint(pointer)) {
+    //   blueCircle.set({ radius: 7, fill: "white" });
+    //   canvas.renderAll();
+    // }
+
+    // const objectsBelowMouse = this.canvas
+    //   .getObjects()
+    //   .filter((obj) => obj.containsPoint(pointer))
+    //   .map((obj) => ({
+    //     type: obj.type,
+    //     left: obj.left,
+    //     top: obj.top,
+    //     width: obj.width || null,
+    //     height: obj.height || null,
+    //     radius: obj.radius || null, // Only for circles
+    //     fill: obj.fill,
+    //     stroke: obj.stroke,
+    //     opacity: obj.opacity,
+    //   }));
+    // if (objectsBelowMouse.length > 0) {
+    //   // console.log("Objects below mouse:");
+    //   console.dir(objectsBelowMouse);
+    // }
+
     if (this.currentLine) {
       if (this.animationFrameId) cancelAnimationFrame(this.animationFrameId);
       this.animationFrameId = requestAnimationFrame(() => {
@@ -321,7 +333,28 @@ export class FlowchartManager {
         evented: false,
         originX: "center",
         originY: "center",
+
+        // stroke: "black",
+        // strokeWidth: 1,
       });
+
+      // Hover animation
+      // blueCircle.on("mouseover", () => {
+      //   blueCircle.set({
+      //     radius: 7, // Slightly increase size
+      //     fill: "white", // Make it just a border
+      //   });
+      //   blueCircle.canvas.renderAll(); // Update canvas
+      // });
+
+      // blueCircle.on("mouseout", () => {
+      //   blueCircle.set({
+      //     radius: 5, // Restore original size
+      //     fill: "yellow", // Restore original fill
+      //   });
+      //   blueCircle.canvas.renderAll();
+      // });
+
       this.canvas.add(blueCircle);
       bluePoints.push(blueCircle);
     });
