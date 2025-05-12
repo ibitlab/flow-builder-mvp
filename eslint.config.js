@@ -10,7 +10,7 @@ export default defineConfig([
     languageOptions: {
       globals: {
         ...globals.browser,
-        ...globals.node, // Ensuring Node.js compatibility
+        ...globals.node,
       },
     },
   },

@@ -1,0 +1,3 @@
+.canvas-wrapper:focus {
+  outline: 1px solid var(--flowchart-canvas-focus);
+}

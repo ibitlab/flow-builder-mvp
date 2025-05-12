@@ -1,4 +1,5 @@
 import { Canvas, Circle, Line } from "fabric";
+import * as styles from "./styles.module.css";
 
 import {
   getDistance,
@@ -44,12 +45,43 @@ export class FlowchartManager {
     this.currentTargetBluePoints = [];
     this.animationFrameId = null;
 
-    // Bind canvas events.
-    this.canvas.on("mouse:move", (e) => this.onMouseMove(e));
-    this.canvas.on("mouse:up", (e) => this.onMouseUp(e));
-    this.canvas.on("object:moving", (e) => this.onObjectMoving(e));
-    this.canvas.on("object:scaling", (e) => this.onObjectScaling(e));
-    // this.canvas.on("selection:created", (e) => this.onSelectionCreated(e));
+    // Bind event handlers
+    this.onMouseMove = this.onMouseMove.bind(this);
+    this.onMouseUp = this.onMouseUp.bind(this);
+    this.onObjectMoving = this.onObjectMoving.bind(this);
+    this.onObjectScaling = this.onObjectScaling.bind(this);
+    this.onSelectionCreated = this.onSelectionCreated.bind(this);
+    this.onSelectionCleared = this.onSelectionCleared.bind(this);
+
+    this.onKeydown = this.onKeydown.bind(this);
+    this.attachEvents();
+
+    // Set the canvas wrapper to be focusable
+    // Help determine if delete/backspace operation on canvas or other inputs
+    this.canvas.wrapperEl.setAttribute("tabindex", "-1");
+    this.canvas.wrapperEl.classList.add(styles.canvasWrapper);
+  }
+
+  attachEvents() {
+    // Attach events using the pre-bound handlers
+    this.canvas.on("mouse:move", this.onMouseMove);
+    this.canvas.on("mouse:up", this.onMouseUp);
+    this.canvas.on("object:moving", this.onObjectMoving);
+    this.canvas.on("object:scaling", this.onObjectScaling);
+    this.canvas.on("selection:created", this.onSelectionCreated);
+    this.canvas.on("selection:cleared", this.onSelectionCleared);
+  }
+
+  // Clean up and remove node properly
+  destroy() {
+    // Remove event listeners
+    this.canvas.off("mouse:move", this.onMouseMove);
+    this.canvas.off("mouse:up", this.onMouseUp);
+    this.canvas.off("object:moving", this.onObjectMoving);
+    this.canvas.off("object:scaling", this.onObjectScaling);
+    this.canvas.off("selection:created", this.onSelectionCreated);
+    this.canvas.off("selection:cleared", this.onSelectionCleared);
+    document.removeEventListener("keydown", this.onKeydown);
   }
 
   addItem(item) {
@@ -63,7 +95,7 @@ export class FlowchartManager {
     removeItem(this.items, item);
 
     // TODO batch for multiple, in the future?
-    this.manager.canvas.requestRenderAll();
+    this.canvas.requestRenderAll();
   }
 
   // Create a node using the FlowchartItem class.
@@ -73,7 +105,29 @@ export class FlowchartManager {
     return item;
   }
 
+  onSelectionCreated() {
+    document.addEventListener("keydown", this.onKeydown);
+  }
+
+  onSelectionCleared() {
+    document.removeEventListener("keydown", this.onKeydown);
+  }
+
+  onKeydown(event) {
+    if (document.activeElement !== this.canvas.wrapperEl) {
+      return; // Prevent deletion if focus is elsewhere
+    }
+
+    if (event.key === "Delete" || event.key === "Backspace") {
+      const activeObject = this.canvas.getActiveObject();
+      if (activeObject && activeObject.flowchartItem) {
+        this.deleteItem(activeObject.flowchartItem);
+      }
+    }
+  }
+
   onObjectScaling() {
+    // TODO this doesn't help prevent scaling multiple
     const activeObject = this.canvas.getActiveObject();
     console.dir(activeObject);
     if (!activeObject) return; // Ensure an object is selected
@@ -95,16 +149,6 @@ export class FlowchartManager {
     // When a node moves, update any connected lines.
     const movedObject = event.target;
     this.updateConnections(movedObject);
-
-    // const movedObject = event.target;
-
-    // // Hide connection points when dragging any node
-    // if (movedObject.connectionPoints) {
-    //   this.hideConnectionPoints(movedObject);
-    // }
-
-    // // Update any connections related to the moved object
-    // this.updateConnections(movedObject);
   }
 
   updateConnections(movedObject) {
@@ -133,7 +177,7 @@ export class FlowchartManager {
         conn.arrow.setCoords();
       }
     });
-    this.canvas.renderAll();
+    this.canvas.requestRenderAll();
   }
 
   // A helper used by node events to check if the pointer is over one of the node's children.

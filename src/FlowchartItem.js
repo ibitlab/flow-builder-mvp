@@ -21,23 +21,30 @@ export class FlowchartItem {
     // Prepare a property to hold our connection points.
     // TODO move out
     this.node.connectionPoints = [];
+    // TODO review this
+    this.node.flowchartItem = this;
 
-    // Bind events.
-    this.node.on("mouseover", () => this.showConnectionPoints());
-    this.node.on("mouseout", (e) => this.onMouseOut(e));
-    this.node.on("moving", () => this.onMoving());
+    this.showConnectionPoints = this.showConnectionPoints.bind(this);
+    this.onMouseOut = this.onMouseOut.bind(this);
+    this.onMoving = this.onMoving.bind(this);
 
-    // Add the node to the canvas.
-    // TODO TBD move out?
-    // this.manager.canvas.add(this.node);
+    this.attachEvents();
   }
 
-  /** Clean up and remove node properly */
+  attachEvents() {
+    // Attach events using the pre-bound handlers
+    // TODO rename
+    this.node.on("mouseover", this.showConnectionPoints);
+    this.node.on("mouseout", this.onMouseOut);
+    this.node.on("moving", this.onMoving);
+  }
+
+  /** Clean up */
   destroy() {
     // Remove event listeners
-    this.node.off("mouseover");
-    this.node.off("mouseout");
-    this.node.off("moving");
+    this.node.off("mouseover", this.showConnectionPoints);
+    this.node.off("mouseout", this.onMouseOut);
+    this.node.off("moving", this.onMoving);
 
     // Remove connection points
     // TODO move this into separate points component
@@ -56,6 +63,7 @@ export class FlowchartItem {
   }
 
   onMouseOut(e) {
+    // TODO add cancellation if then mouse in again
     setTimeout(() => {
       if (!this.manager.isHoveringOverChild(this.node, e)) {
         this.hideConnectionPoints();

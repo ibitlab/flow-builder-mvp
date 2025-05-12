@@ -1,3 +1,4 @@
+import "./global.css";
 import { FlowchartManager } from "./FlowchartManager.js";
 
 const chartConfig = {
