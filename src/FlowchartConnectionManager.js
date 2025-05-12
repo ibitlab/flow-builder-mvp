@@ -8,6 +8,10 @@ export class FlowchartConnectionManager {
     this.manager = manager;
     this.connections = [];
 
+    // rethink this
+    this.connectionStartCircle = null;
+    this.currentLine = null;
+
     // init Side connection Points for Start and End Item
     this.startSideConnectionPoints = null;
     this.targetSideConnectionPoints = null;
@@ -56,8 +60,9 @@ export class FlowchartConnectionManager {
   }
 
   showStartConnectionPoints(item) {
+    console.error("showStartConnectionPoints");
     if (this.startSideConnectionPoints) {
-      console.error("showStartConnectionPoints on existing starts");
+      console.error("showStartConnectionPoints on existing starts node");
       this.hideStartConnectionPoints();
     }
     this.startSideConnectionPoints = new FlowchartSideConnectionPoints(
@@ -65,7 +70,7 @@ export class FlowchartConnectionManager {
       item,
       ItemBehaviorType.START
     );
-    this.startSideConnectionPoints.showConnectionPoints();
+    this.startSideConnectionPoints.initConnectionPoints();
   }
 
   hideStartConnectionPoints() {
@@ -75,8 +80,9 @@ export class FlowchartConnectionManager {
   }
 
   showTargetConnectionPoints(item) {
+    console.error("showTargetConnectionPoints");
     if (this.targetSideConnectionPoints) {
-      console.error("showTargetConnectionPoints on existing targets");
+      console.error("showTargetConnectionPoints on existing targets node");
       this.hideTargetConnectionPoints();
     }
     this.targetSideConnectionPoints = new FlowchartSideConnectionPoints(

@@ -14,9 +14,9 @@ export class FlowchartItem {
     this.connectionPoints = [];
     this.prepareConnectionPoints();
 
-    this.onMouseover = this.onMouseover.bind(this);
-    this.onMouseOut = this.onMouseOut.bind(this);
-    this.onMoving = this.onMoving.bind(this);
+    // this.onMouseover = this.onMouseover.bind(this);
+    // this.onMouseOut = this.onMouseOut.bind(this);
+    // this.onMoving = this.onMoving.bind(this);
 
     this.attachEvents();
   }
@@ -30,35 +30,36 @@ export class FlowchartItem {
   }
 
   attachEvents() {
-    this.node.on("mouseover", this.onMouseover);
-    this.node.on("mouseout", this.onMouseOut);
-    this.node.on("moving", this.onMoving);
+    // this.node.on("mouseover", this.onMouseover);
+    // this.node.on("mouseout", this.onMouseOut);
+    // this.node.on("moving", this.onMoving);
   }
 
   destroy() {
-    this.node.off("mouseover", this.onMouseover);
-    this.node.off("mouseout", this.onMouseOut);
-    this.node.off("moving", this.onMoving);
+    // this.node.off("mouseover", this.onMouseover);
+    // this.node.off("mouseout", this.onMouseOut);
+    // this.node.off("moving", this.onMoving);
   }
 
-  onMouseOut(e) {
-    // TODO add cancellation if then mouse in again
-    setTimeout(() => {
-      // TODO WARN Recheck isHoveringOverChild !!
-      if (!this.manager.isHoveringOverChild(this.node, e)) {
-        this.manager.connectionManager.hideStartConnectionPoints();
-      }
-    }, 200);
-  }
+  // onMouseOut(e) {
+  //   // TODO add cancellation if then mouse in again
+  //   setTimeout(() => {
+  //     // TODO WARN Recheck isHoveringOverChild !!
+  //     // in preogress
+  //     if (!this.manager.isHoveringOverChild(this.node, e)) {
+  //       this.manager.connectionManager.hideStartConnectionPoints();
+  //     }
+  //   }, 200);
+  // }
 
-  onMoving() {
-    this.manager.connectionManager.hideStartConnectionPoints();
-    this.manager.connectionManager.hideTargetConnectionPoints();
-  }
+  // onMoving() {
+  //   this.manager.connectionManager.hideStartConnectionPoints();
+  //   this.manager.connectionManager.hideTargetConnectionPoints();
+  // }
 
-  onMouseover() {
-    console.log("FlowchartItem show start ConnectionPoints this.item=", this);
-    // TODO pass down node to get its connections point coordinates
-    this.manager.connectionManager.showStartConnectionPoints(this);
-  }
+  // onMouseover() {
+  //   console.log("FlowchartItem show start ConnectionPoints this.item=", this);
+  //   // TODO pass down node to get its connections point coordinates
+  //   this.manager.connectionManager.showStartConnectionPoints(this);
+  // }
 }

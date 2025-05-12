@@ -67,22 +67,22 @@ export const createCircle = (pt) => {
     originY: "center",
   });
 
-  // Hover animation
-  circle.on("mouseover", () => {
-    circle.set({
-      radius: 7, // Slightly increase size
-      fill: "white", // Make it just a border
-    });
-    circle.canvas.renderAll(); // Update canvas
-  });
+  // // Hover animation
+  // circle.on("mouseover", () => {
+  //   circle.set({
+  //     radius: 7, // Slightly increase size
+  //     fill: "white", // Make it just a border
+  //   });
+  //   circle.canvas.renderAll(); // Update canvas
+  // });
 
-  circle.on("mouseout", () => {
-    circle.set({
-      radius: 5, // Restore original size
-      fill: "red", // Restore original fill
-    });
-    circle.canvas.renderAll();
-  });
+  // circle.on("mouseout", () => {
+  //   circle.set({
+  //     radius: 5, // Restore original size
+  //     fill: "red", // Restore original fill
+  //   });
+  //   circle.canvas.renderAll();
+  // });
 
   return circle;
 };
