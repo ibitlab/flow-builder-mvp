@@ -8,9 +8,9 @@ const chartConfig = {
 };
 const flowchart = new FlowchartManager("canvasFlow", chartConfig);
 
-const startNode = flowchart.createItem("Start", 100, 100);
-const processNode = flowchart.createItem("Process", 300, 100);
-const endNode = flowchart.createItem("End", 500, 100);
+const startItem = flowchart.createItem("Start", 100, 100);
+const processItem = flowchart.createItem("Process", 300, 100);
+const endItem = flowchart.createItem("End", 500, 100);
 
-flowchart.connectNodes(startNode, processNode);
-flowchart.connectNodes(processNode, endNode);
+flowchart.connectItems(startItem, processItem);
+flowchart.connectItems(processItem, endItem);

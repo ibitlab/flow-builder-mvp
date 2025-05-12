@@ -1,138 +1,81 @@
-import { Line, Circle } from "fabric";
-// import { createNode } from "./fabricUtils.js";
-
-// TODO move out
-export const Edge = {
-  TOP: "top",
-  LEFT: "left",
-  RIGHT: "right",
-  BOTTOM: "bottom",
-};
-
-export const ItemInteractionType = {
-  START: "START",
-  TARGET: "TARGET",
-};
-
-const getEdgePositions = (bounds) => {
-  return [
-    { x: bounds.left + bounds.width / 2, y: bounds.top, edge: Edge.TOP },
-    { x: bounds.left, y: bounds.top + bounds.height / 2, edge: Edge.LEFT },
-    {
-      x: bounds.left + bounds.width,
-      y: bounds.top + bounds.height / 2,
-      edge: Edge.RIGHT,
-    },
-    {
-      x: bounds.left + bounds.width / 2,
-      y: bounds.top + bounds.height,
-      edge: Edge.BOTTOM,
-    },
-  ];
-};
-
-export const circleConfigDefault = {
-  radius: 5,
-  fill: "rgba(128, 188, 254, 0.6)",
-  stroke: "black",
-  strokeWidth: 1,
-};
-
-const createCircle = (pt) => {
-  const circle = new Circle({
-    ...circleConfigDefault,
-    left: pt.x,
-    top: pt.y,
-    selectable: false, // not draggable/selected
-    evented: true, // allow clicks (for starting a connection)
-    originX: "center",
-    originY: "center",
-  });
-
-  // Hover animation
-  circle.on("mouseover", () => {
-    circle.set({
-      radius: 7, // Slightly increase size
-      fill: "white", // Make it just a border
-    });
-    circle.canvas.renderAll(); // Update canvas
-  });
-
-  circle.on("mouseout", () => {
-    circle.set({
-      radius: 5, // Restore original size
-      fill: "red", // Restore original fill
-    });
-    circle.canvas.renderAll();
-  });
-
-  // return circle;
-};
+import {
+  createCircle,
+  createLine,
+  ItemBehaviorType,
+} from "./FlowchartSideConnectionPointsUtils.js";
 
 export class FlowchartSideConnectionPoints {
-  constructor(manager, itemInteractionType) {
-    this.manager = manager;
-    this.itemInteractionType = itemInteractionType;
+  constructor(connectionManager, item, itemBehaviorType) {
+    this.manager = connectionManager.manager;
+    this.itemBehaviorType = itemBehaviorType;
+    this.item = item;
+    console.log("FlowchartSideConnectionPoints item=", item, itemBehaviorType);
+    this.connectionPointsElements = [];
 
-    // this.node.connectionPoints = [];
+    // rethink this
+    this.connectionStartCircle = null;
+    this.currentLine = null;
   }
 
-  destroy() {}
+  isTarget() {
+    return this.itemBehaviorType === ItemBehaviorType.TARGET;
+  }
 
-  // Create and show red connection circles along the node’s edges.
-  showConnectionPoints() {
-    // Clear any existing connection points.
+  destroy() {
     this.hideConnectionPoints();
+  }
 
-    const bounds = this.node.getBoundingRect();
+  // Create and show START/Target(TODO) connection circles along the node’s edges.
+  showConnectionPoints() {
+    // TODO points should be get from item points
+    // const bounds = this.item.node.getBoundingRect();
     // Define positions for top, left, right, and bottom.
-    const positions = getEdgePositions(bounds);
-
+    console.log("showConnectionPoints this.item=", this.item);
+    const positions = this.item.connectionPoints; // getEdgePositions12323(bounds);
+    console.log("showConnectionPoints positions=", positions);
     positions.forEach((pt) => {
       const circle = createCircle(pt);
+      console.log("showConnectionPoints positions.forEach=", pt);
 
       circle.edge = pt.edge;
-      circle.nodeParent = this.node;
+      circle.nodeParent = this.item.node;
 
-      // When you press down on the red circle, start a connection.
-      circle.on("mousedown", (e) => {
-        e.e.stopPropagation();
-        // Temporarily disable node dragging.
-        circle.nodeParent.selectable = false;
-        this.manager.canvas.selection = false;
-        // Tell the manager which connection point we started at.
-        this.manager.connectionStartCircle = circle;
-        const pointer = this.manager.canvas.getPointer(e.e);
-        this.manager.currentLine = new Line(
-          [pointer.x, pointer.y, pointer.x, pointer.y],
-          {
-            stroke: "black",
-            strokeWidth: 2,
-            selectable: false,
-          }
-        );
-        this.manager.canvas.add(this.manager.currentLine);
-      });
+      // When you press down on the start circle, start a connection.
+      // TODO move this logic out?
+      if (!this.isTarget()) {
+        circle.on("mousedown", (e) => {
+          e.e.stopPropagation();
+          // Temporarily disable node dragging.
+          circle.nodeParent.selectable = false;
+          this.manager.canvas.selection = false;
+          // Tell the manager which connection point we started at.
+          this.connectionStartCircle = circle;
+          const pointer = this.manager.canvas.getPointer(e.e);
+          this.currentLine = createLine(pointer);
+          this.manager.canvas.add(this.currentLine);
+        });
 
-      // Prevent the red circle from stealing focus.
-      circle.on("mouseover", (e) => {
-        e.e.stopPropagation();
-        this.manager.canvas.discardActiveObject();
-        this.manager.canvas.requestRenderAll();
-      });
+        // Prevent the red circle from stealing focus.
+        // TODO review
+        circle.on("mouseover", (e) => {
+          e.e.stopPropagation();
+          this.manager.canvas.discardActiveObject();
+          this.manager.canvas.requestRenderAll();
+        });
+      }
 
       this.manager.canvas.add(circle);
-      this.node.connectionPoints.push(circle);
+      this.connectionPointsElements.push(circle);
     });
   }
 
   // Remove (hide) all red connection circles from this node.
   hideConnectionPoints() {
-    if (this.node.connectionPoints) {
-      this.node.connectionPoints.forEach((cp) =>
+    if (this.connectionPointsElements) {
+      this.connectionPointsElements.forEach((cp) =>
         this.manager.canvas.remove(cp)
       );
-      this.node.connectionPoints = [];
+      this.connectionPointsElements = [];
     }
   }
 }

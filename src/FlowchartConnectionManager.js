@@ -1,10 +1,16 @@
 import { FlowchartConnection } from "./FlowchartConnection.js";
+import { FlowchartSideConnectionPoints } from "./FlowchartSideConnectionPoints.js";
+import { ItemBehaviorType } from "./FlowchartSideConnectionPointsUtils.js";
 import { getAngleBetweenPoints } from "./utils.js";
 
 export class FlowchartConnectionManager {
   constructor(manager) {
     this.manager = manager;
     this.connections = [];
+
+    // init Side connection Points for Start and End Item
+    this.startSideConnectionPoints = null;
+    this.targetSideConnectionPoints = null;
   }
 
   attachEvents() {}
@@ -47,5 +53,42 @@ export class FlowchartConnectionManager {
       }
     });
     this.manager.canvas.requestRenderAll();
+  }
+
+  showStartConnectionPoints(item) {
+    if (this.startSideConnectionPoints) {
+      console.error("showStartConnectionPoints on existing starts");
+      this.hideStartConnectionPoints();
+    }
+    this.startSideConnectionPoints = new FlowchartSideConnectionPoints(
+      this,
+      item,
+      ItemBehaviorType.START
+    );
+    this.startSideConnectionPoints.showConnectionPoints();
+  }
+
+  hideStartConnectionPoints() {
+    // TODO investigate when it was called and prevent call again
+    this.startSideConnectionPoints?.destroy();
+    this.startSideConnectionPoints = null;
+  }
+
+  showTargetConnectionPoints(item) {
+    if (this.targetSideConnectionPoints) {
+      console.error("showTargetConnectionPoints on existing targets");
+      this.hideTargetConnectionPoints();
+    }
+    this.targetSideConnectionPoints = new FlowchartSideConnectionPoints(
+      this,
+      item,
+      ItemBehaviorType.TARGET
+    );
+  }
+
+  hideTargetConnectionPoints() {
+    // TODO investigate when it was called and prevent call again
+    this.targetSideConnectionPoints?.destroy();
+    this.targetSideConnectionPoints = null;
   }
 }

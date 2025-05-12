@@ -14,6 +14,7 @@ export function getDistance(p1, p2) {
  * @returns {Object} - An object with x and y properties representing the center.
  */
 export function getCenter(obj) {
+  if (!obj) return;
   const bounds = obj.getBoundingRect();
   return {
     x: bounds.left + bounds.width / 2,
@@ -62,6 +63,7 @@ export function findClosestBluePoint(node) {
 
   let minDist = Infinity;
   let closestPoint = null;
+  // TODO
   const nodeCenter = getCenter(node); // Using utility
 
   node.connectionPoints.forEach((cp) => {

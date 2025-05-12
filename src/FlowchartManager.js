@@ -12,10 +12,6 @@ import {
 import { FlowchartItem } from "./FlowchartItem.js";
 import { FlowchartConnection } from "./FlowchartConnection.js";
 import { FlowchartConnectionManager } from "./FlowchartConnectionManager.js";
-import {
-  FlowchartSideConnectionPoints,
-  ItemInteractionType,
-} from "./FlowchartSideConnectionPoints.js";
 
 const chartDefaultConfig = {
   selection: true,
@@ -41,20 +37,11 @@ export class FlowchartManager {
     );
     this.items = [];
     this.connectionManager = new FlowchartConnectionManager(this);
-    // init Side connection Points for Start and End Item
-    this.startSideConnectionPoints = new FlowchartSideConnectionPoints(
-      this,
-      ItemInteractionType.START
-    );
-    this.targetSideConnectionPoints = new FlowchartSideConnectionPoints(
-      this,
-      ItemInteractionType.TARGET
-    );
 
     // TODO review
-    this.currentLine = null;
-    this.connectionStartCircle = null;
-    this.currentTargetBluePoints = [];
+    // this.currentLine = null;
+    // this.connectionStartCircle = null;
+    // this.currentTargetBluePoints = [];
     this.animationFrameId = null;
 
     // Bind event handlers
@@ -169,6 +156,7 @@ export class FlowchartManager {
   }
 
   // A helper used by node events to check if the pointer is over one of the node's children.
+  // TODO rethink
   isHoveringOverChild(node, event) {
     const pointer = this.canvas.getPointer(event.e);
     return (node.connectionPoints || []).some((cp) => {
@@ -190,8 +178,8 @@ export class FlowchartManager {
       // Search for a target node (not the source) within an expanded target zone.
       this.items.forEach(({ node }) => {
         if (
-          this.connectionStartCircle &&
-          node === this.connectionStartCircle.nodeParent
+          this.connectionManager.connectionStartCircle &&
+          node === this.connectionManager.connectionStartCircle.nodeParent
         )
           return;
         if (isInsideTargetZone(pointer, node)) {
@@ -199,7 +187,11 @@ export class FlowchartManager {
         }
       });
 
-      if (targetNode && this.currentTargetBluePoints.length > 0) {
+      if (
+        targetNode &&
+        this.connectionManager.targetSideConnectionPoints
+          .connectionPointsElements.length > 0
+      ) {
         // Find the closest blue point.
         let closestPoint = null;
         let minDist = Infinity;
@@ -218,15 +210,15 @@ export class FlowchartManager {
         if (closestPoint) {
           // Instantiate a FlowchartConnection to finalize the arrow.
           this.connectionManager.addConnection(
-            this.connectionStartCircle.nodeParent,
+            this.connectionManager.connectionStartCircle.nodeParent,
             targetNode,
-            this.currentLine,
+            this.connectionManager.currentLine,
             closestPoint
           );
         }
       } else {
         // If no valid target was found, remove the temporary line.
-        this.canvas.remove(this.currentLine);
+        this.canvas.remove(this.connectionManager.currentLine);
       }
 
       // Clean up temporary blue connection points.
@@ -234,12 +226,15 @@ export class FlowchartManager {
         this.removeTargetConnectionPoints();
       }
       // Re-enable selection on the source node.
-      if (this.connectionStartCircle && this.connectionStartCircle.nodeParent) {
-        this.connectionStartCircle.nodeParent.selectable = true;
+      if (
+        this.connectionManager.connectionStartCircle &&
+        this.connectionManager.connectionStartCircle.nodeParent
+      ) {
+        this.connectionManager.connectionStartCircle.nodeParent.selectable = true;
       }
       this.canvas.selection = true;
-      this.currentLine = null;
-      this.connectionStartCircle = null;
+      this.connectionManager.currentLine = null;
+      this.connectionManager.connectionStartCircle = null;
       this.canvas.requestRenderAll();
     }
   }
@@ -272,11 +267,14 @@ export class FlowchartManager {
     //   console.dir(objectsBelowMouse);
     // }
 
-    if (this.currentLine) {
+    if (this.connectionManager.currentLine) {
       if (this.animationFrameId) cancelAnimationFrame(this.animationFrameId);
       this.animationFrameId = requestAnimationFrame(() => {
-        this.currentLine.set({ x2: pointer.x, y2: pointer.y });
-        this.currentLine.setCoords();
+        this.connectionManager.currentLine.set({
+          x2: pointer.x,
+          y2: pointer.y,
+        });
+        this.connectionManager.currentLine.setCoords();
         this.canvas.requestRenderAll();
       });
     }
@@ -286,11 +284,11 @@ export class FlowchartManager {
     let minDist = Infinity;
     this.items.forEach(({ node }) => {
       if (
-        this.connectionStartCircle &&
-        node === this.connectionStartCircle.nodeParent
+        this.connectionManager.connectionStartCircle &&
+        node === this.connectionManager.connectionStartCircle.nodeParent
       )
         return;
-      if (isInsideTargetZone(pointer, node)) {
+      if (isInsideTargetZone(pointer, node, 20)) {
         // const bounds = node.getBoundingRect();
         // const centerX = bounds.left + bounds.width / 2;
         // const centerY = bounds.top + bounds.height / 2;
@@ -304,10 +302,18 @@ export class FlowchartManager {
       }
     });
 
-    if (closestTarget && this.currentTargetBluePoints.length === 0) {
+    if (
+      closestTarget &&
+      this.connectionManager.targetSideConnectionPoints
+        ?.connectionPointsElements?.length === 0
+    ) {
       this.currentTargetBluePoints =
         this.showTargetConnectionPoints(closestTarget);
-    } else if (!closestTarget && this.currentTargetBluePoints.length > 0) {
+    } else if (
+      !closestTarget &&
+      this.connectionManager.targetSideConnectionPoints
+        ?.connectionPointsElements?.length > 0
+    ) {
       this.removeTargetConnectionPoints();
     }
   }
@@ -362,15 +368,15 @@ export class FlowchartManager {
   }
 
   // Remove blue connection indicators.
-  removeTargetConnectionPoints() {
-    this.currentTargetBluePoints?.forEach((p) => this.canvas.remove(p));
-    this.currentTargetBluePoints = [];
-  }
+  // removeTargetConnectionPoints() {
+  //   this.currentTargetBluePoints?.forEach((p) => this.canvas.remove(p));
+  //   this.currentTargetBluePoints = [];
+  // }
 
   // TODO rework it. we need support 4 points
-  connectNodes(fromNode, toNode) {
+  connectItems(fromItem, toItem) {
     // Find the closest blue connection point on the target node.
-    const closestPoint = findClosestBluePoint(toNode);
+    const closestPoint = findClosestBluePoint(toItem.node);
 
     if (!closestPoint) {
       console.warn("No valid connection point found.");
@@ -380,8 +386,8 @@ export class FlowchartManager {
     // Create a temporary line.
     const tempLine = new Line(
       [
-        fromNode.left + 60,
-        fromNode.top + 30,
+        fromItem.left + 60,
+        fromItem.top + 30,
         closestPoint.left,
         closestPoint.top,
       ],
@@ -394,6 +400,6 @@ export class FlowchartManager {
     this.canvas.add(tempLine);
 
     // Use the FlowchartConnection class to finalize the connection.
-    new FlowchartConnection(this, fromNode, toNode, tempLine, closestPoint);
+    new FlowchartConnection(this, fromItem, toItem, tempLine, closestPoint);
   }
 }
