@@ -8,12 +8,8 @@ export class FlowchartSideConnectionPoints {
     this.manager = connectionManager.manager;
     this.itemBehaviorType = itemBehaviorType;
     this.item = item;
-    console.log("FlowchartSideConnectionPoints item=", item, itemBehaviorType);
     this.connectionPointsElements = [];
 
-    // // rethink this
-    // this.connectionStartCircle = null;
-    // this.currentLine = null;
     this.initConnectionPoints();
   }
 

@@ -21,17 +21,19 @@ export class FlowchartConnectionManager {
 
   destroy() {}
 
-  addConnection(fromNode, targetNode, line, targetBluePoint) {
+  addConnection(fromNode, targetNode, line, targetPoint) {
     // TODO remove line, it should be created based on start/end points
     const conn = new FlowchartConnection(
       fromNode,
       targetNode,
       line,
-      targetBluePoint
+      targetPoint
     );
 
     // TODO create methods for canvas, wrapper
     this.manager.canvas.add(conn.arrow);
+    // Todo check why do not work
+    this.manager.canvas.sendObjectToBack(conn.arrow);
     // Save the connection.
     this.connections.push(conn);
   }

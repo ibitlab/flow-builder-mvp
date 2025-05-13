@@ -139,7 +139,6 @@ export class FlowchartManager {
   }
 
   onMouseDown(e) {
-    console.log("onMouseDown=", e);
     this.isMovement = true;
 
     if (isConnectionPoint(e.target)) {
@@ -165,53 +164,39 @@ export class FlowchartManager {
 
   // Finalize connection on mouse up.
   onMouseUp(e) {
-    console.log("onMouseUp=", e);
     this.isMovement = false;
     if (this.connectionManager.currentLine) {
-      const pointer = this.canvas.getPointer(e.e);
-      let targetNode = null;
-      // Search for a target node (not the source) within an expanded target zone.
-      this.items.forEach(({ node }) => {
-        if (
-          this.connectionManager.connectionStartCircle &&
-          node ===
-            this.connectionManager.connectionStartCircle.sideConnectionPoints
-              .item.node
-        )
-          return;
-        if (isInsideTargetZone(pointer, node)) {
-          targetNode = node;
-        }
-      });
+      // const pointer = this.canvas.getPointer(e.e);
+      // let targetNode = null;
+      // // Search for a target node (not the source) within an expanded target zone.
+      // this.items.forEach(({ node }) => {
+      //   if (
+      //     this.connectionManager.connectionStartCircle &&
+      //     node ===
+      //       this.connectionManager.connectionStartCircle.sideConnectionPoints
+      //         .item.node
+      //   ) {
+      //     return;
+      //   }
 
-      if (
-        targetNode &&
-        this.connectionManager.targetSideConnectionPoints
-          ?.connectionPointsElements.length > 0
-      ) {
-        // Find the closest blue point.
-        let closestPoint = null;
-        let minDist = Infinity;
+      //   // TODO possible collision if nodes overlaps
+      //   if (isInsideTargetZone(pointer, node)) {
+      //     targetNode = node;
+      //   }
+      // });
 
-        // TODO extract
-        this.currentTargetBluePoints.forEach((bp) => {
-          const dx = bp.left - pointer.x;
-          const dy = bp.top - pointer.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < minDist) {
-            minDist = dist;
-            closestPoint = bp;
-          }
-        });
-
-        if (closestPoint) {
+      if (isConnectionPoint(e.target)) {
+        const targetConnectionCircle = e.target;
+        const sideConnectionPoints =
+          targetConnectionCircle?.sideConnectionPoints;
+        if (sideConnectionPoints.itemBehaviorType === ItemBehaviorType.TARGET) {
           // Instantiate a FlowchartConnection to finalize the arrow.
           this.connectionManager.addConnection(
             this.connectionManager.connectionStartCircle.sideConnectionPoints
               .item.node,
-            targetNode,
+            targetConnectionCircle.sideConnectionPoints.item.node,
             this.connectionManager.currentLine,
-            closestPoint
+            targetConnectionCircle
           );
         }
       } else {
@@ -219,10 +204,42 @@ export class FlowchartManager {
         this.canvas.remove(this.connectionManager.currentLine);
       }
 
-      // Clean up temporary blue connection points.
-      if (this.currentTargetBluePoints.length > 0) {
-        this.removeTargetConnectionPoints();
+      // const targetNode = this.connectionManager.targetSideConnectionPoints;
+      // if (targetNode) {
+      //   // Find the closest blue point.
+      //   let closestPoint = null;
+      //   let minDist = Infinity;
+
+      //   // TODO extract
+      //   this.currentTargetBluePoints.forEach((bp) => {
+      //     const dx = bp.left - pointer.x;
+      //     const dy = bp.top - pointer.y;
+      //     const dist = Math.sqrt(dx * dx + dy * dy);
+      //     if (dist < minDist) {
+      //       minDist = dist;
+      //       closestPoint = bp;
+      //     }
+      //   });
+
+      //   if (closestPoint) {
+      //     // Instantiate a FlowchartConnection to finalize the arrow.
+      //     this.connectionManager.addConnection(
+      //       this.connectionManager.connectionStartCircle.sideConnectionPoints
+      //         .item.node,
+      //       targetNode,
+      //       this.connectionManager.currentLine,
+      //       closestPoint
+      //     );
+      //   }
+      // } else {
+      //   // If no valid target was found, remove the temporary line.
+      //   this.canvas.remove(this.connectionManager.currentLine);
+      // }
+
+      if (this.connectionManager.targetSideConnectionPoints) {
+        this.connectionManager.hideTargetConnectionPoints();
       }
+
       // Re-enable selection on the source node.
       if (
         this.connectionManager.connectionStartCircle &&

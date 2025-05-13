@@ -11,14 +11,15 @@ import { getAngleBetweenPoints } from "./utils.js";
        – and storing the connection.
 --------------------------------- */
 export class FlowchartConnection {
-  constructor(fromNode, targetNode, line, targetBluePoint) {
+  constructor(fromNode, targetNode, line, targetPoint) {
+    // TODO use targetPoint.edge to attach for correct point
     this.from = fromNode;
     this.to = targetNode;
     this.line = line;
     // Snap the connection end to the closest blue point.
     this.line.set({
-      x2: targetBluePoint.left,
-      y2: targetBluePoint.top,
+      x2: targetPoint.left,
+      y2: targetPoint.top,
     });
     this.line.setCoords();
 
@@ -29,8 +30,8 @@ export class FlowchartConnection {
     );
 
     this.arrow = new Triangle({
-      left: targetBluePoint.left,
-      top: targetBluePoint.top,
+      left: targetPoint.left,
+      top: targetPoint.top,
       width: 12,
       height: 16,
       fill: "black",
