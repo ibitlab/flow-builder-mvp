@@ -103,9 +103,17 @@ export class FlowchartManager {
   }
 
   // Create a node using the FlowchartItem class.
-  createItem(id, text, left, top, width, height) {
+  createItem(id, text, type, left, top, width, height) {
     const itemId = id || uuidv4();
-    const item = new FlowchartItem(itemId, text, left, top, width, height);
+    const item = new FlowchartItem(
+      itemId,
+      text,
+      type,
+      left,
+      top,
+      width,
+      height
+    );
     this.addItem(item);
     return item;
   }
@@ -417,7 +425,15 @@ export function loadFlowchartNodes(json, flowchart) {
   const items = {};
 
   json.nodes.forEach((node) => {
-    items[node.id] = flowchart.createItem(null, node.label, node.x, node.y);
+    items[node.id] = flowchart.createItem(
+      node.id,
+      node.label,
+      node.type,
+      node.x,
+      node.y,
+      node.width,
+      node.height
+    );
   });
 
   return items; // Store and return created items for later connections

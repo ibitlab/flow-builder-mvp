@@ -1,62 +1,135 @@
 {
   "nodes": [
-    { "id": "start", "label": "Start 🗄️", "x": 100, "y": 100 },
-    { "id": "orderReceived", "label": "Order Received 📦", "x": 300, "y": 100 },
+    {
+      "id": "start",
+      "type": "🗄️",
+      "label": "Start",
+      "x": 100,
+      "y": 100,
+      "height": 80
+    },
+    {
+      "id": "orderReceived",
+      "type": "📦",
+      "label": "Order Received",
+      "x": 300,
+      "y": 100,
+      "height": 80
+    },
     {
       "id": "paymentVerification",
-      "label": "Payment Verified 💰",
+      "type": "💰",
+      "label": "Payment Verified",
       "x": 500,
-      "y": 100
+      "y": 100,
+      "height": 80
     },
-    { "id": "fraudCheck", "label": "Fraud Check 🔍", "x": 500, "y": 250 },
-    { "id": "fraudDetected", "label": "Fraud Detected 🚨", "x": 500, "y": 400 },
+    {
+      "id": "fraudCheck",
+      "type": "🔍",
+      "label": "Fraud Check",
+      "x": 500,
+      "y": 250,
+      "height": 80
+    },
+    {
+      "id": "fraudDetected",
+      "type": "🚨",
+      "label": "Fraud Detected",
+      "x": 500,
+      "y": 400,
+      "height": 80
+    },
     {
       "id": "notifySecurity",
-      "label": "Notify Security 🚔",
+      "type": "🚔",
+      "label": "Notify Security",
       "x": 700,
-      "y": 400
+      "y": 400,
+      "height": 80
     },
-    { "id": "stockCheck", "label": "Check Stock 🏪", "x": 700, "y": 100 },
+    {
+      "id": "stockCheck",
+      "type": "🏪",
+      "label": "Check Stock",
+      "x": 700,
+      "y": 100,
+      "height": 80
+    },
     {
       "id": "stockAvailable",
-      "label": "Stock Available ✅",
+      "type": "✅",
+      "label": "Stock Available",
       "x": 900,
-      "y": 100
+      "y": 100,
+      "height": 80
     },
     {
       "id": "stockUnavailable",
-      "label": "Stock Unavailable ❌",
+      "type": "❌",
+      "label": "Stock Unavailable",
       "x": 900,
-      "y": 250
+      "y": 250,
+      "height": 80
     },
     {
       "id": "notifyCustomer",
-      "label": "Notify Customer ✉️",
+      "type": "✉️",
+      "label": "Notify Customer",
       "x": 1100,
-      "y": 250
+      "y": 250,
+      "height": 80
     },
     {
       "id": "processShipment",
-      "label": "Process Shipment 🚚",
+      "type": "🚚",
+      "label": "Process Shipment",
       "x": 1100,
-      "y": 100
+      "y": 100,
+      "height": 80
     },
-    { "id": "shipmentSent", "label": "Shipment Sent 📤", "x": 1300, "y": 100 },
+    {
+      "id": "shipmentSent",
+      "type": "📤",
+      "label": "Shipment Sent",
+      "x": 1300,
+      "y": 100,
+      "height": 80
+    },
     {
       "id": "orderComplete",
-      "label": "Order Complete 🏁",
+      "type": "🏁",
+      "label": "Order Complete",
       "x": 1500,
-      "y": 100
+      "y": 100,
+      "height": 80
     },
-    { "id": "refundProcess", "label": "Refund Process 🔄", "x": 700, "y": 550 },
+    {
+      "id": "refundProcess",
+      "type": "🔄",
+      "label": "Refund Process",
+      "x": 700,
+      "y": 550,
+      "height": 80
+    },
     {
       "id": "customerSupport",
-      "label": "Customer Support 📞",
+      "type": "📞",
+      "label": "Customer Support",
       "x": 900,
-      "y": 550
+      "y": 550,
+      "height": 80
     },
-    { "id": "issueResolved", "label": "Issue Resolved ✔️", "x": 1100, "y": 550 }
+    {
+      "id": "issueResolved",
+      "type": "✔️",
+      "label": "Issue Resolved",
+      "x": 1100,
+      "y": 550,
+      "height": 80
+    }
   ],
+
   "connections": [
     {
       "from": "start",

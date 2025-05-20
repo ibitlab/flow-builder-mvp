@@ -3,12 +3,12 @@ import { createNode } from "../fabric-components/fabricUtils.js";
 import { getEdgePositions } from "../utils/utils.js";
 
 export class FlowchartItem {
-  constructor(id, text, left, top, width, height) {
+  constructor(id, text, type, left, top, width, height) {
     if (!id) {
       throw new Error("Item ID is required");
     }
     this.id = id;
-    this.node = createNode(text, left, top, width, height);
+    this.node = createNode(text, type, left, top, width, height);
     // TODO review this
     this.node.flowchartItem = this;
 

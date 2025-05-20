@@ -1,0 +1,208 @@
+{
+  "nodes": [
+    {
+      "id": "start",
+      "type": "❓",
+      "label": "Issue Identified?",
+      "x": 100,
+      "y": 250,
+      "height": 90
+    },
+
+    {
+      "id": "checkConsole",
+      "type": "🔍",
+      "label": "Check Console Errors",
+      "x": 300,
+      "y": 250,
+      "height": 90
+    },
+    {
+      "id": "syntaxError",
+      "type": "⚠️",
+      "label": "Syntax or Reference Error?",
+      "x": 500,
+      "y": 250,
+      "height": 90
+    },
+    {
+      "id": "fixCode",
+      "type": "🛠️",
+      "label": "Fix Code Issue",
+      "x": 700,
+      "y": 250,
+      "height": 90
+    },
+
+    {
+      "id": "checkNetwork",
+      "type": "📡",
+      "label": "Check Network Requests",
+      "x": 500,
+      "y": 400,
+      "height": 90
+    },
+    {
+      "id": "serverIssue",
+      "type": "💻",
+      "label": "Server Responding?",
+      "x": 700,
+      "y": 400,
+      "height": 90
+    },
+    {
+      "id": "networkRetry",
+      "type": "🔁",
+      "label": "Retry or Debug API?",
+      "x": 900,
+      "y": 400,
+      "height": 90
+    },
+
+    {
+      "id": "frontendIssue",
+      "type": "🎨",
+      "label": "UI Rendering Correctly?",
+      "x": 500,
+      "y": 550,
+      "height": 90
+    },
+    {
+      "id": "cssProblem",
+      "type": "🎨",
+      "label": "CSS Issue or JS?",
+      "x": 700,
+      "y": 550,
+      "height": 90
+    },
+    {
+      "id": "fixStyles",
+      "type": "🎭",
+      "label": "Fix CSS & Layout",
+      "x": 900,
+      "y": 550,
+      "height": 90
+    },
+
+    {
+      "id": "checkState",
+      "type": "🔄",
+      "label": "Check State Management",
+      "x": 700,
+      "y": 700,
+      "height": 90
+    },
+    {
+      "id": "fixState",
+      "type": "🧠",
+      "label": "Correct State Flow",
+      "x": 900,
+      "y": 700,
+      "height": 90
+    },
+
+    {
+      "id": "success",
+      "type": "✅",
+      "label": "Issue Resolved!",
+      "x": 1100,
+      "y": 400,
+      "height": 90
+    }
+  ],
+  "connections": [
+    {
+      "from": "start",
+      "to": "checkConsole",
+      "fromEdge": "right",
+      "toEdge": "left"
+    },
+    {
+      "from": "checkConsole",
+      "to": "syntaxError",
+      "fromEdge": "right",
+      "toEdge": "left"
+    },
+    {
+      "from": "syntaxError",
+      "to": "fixCode",
+      "fromEdge": "right",
+      "toEdge": "left"
+    },
+
+    {
+      "from": "checkConsole",
+      "to": "checkNetwork",
+      "fromEdge": "right",
+      "toEdge": "left"
+    },
+    {
+      "from": "checkNetwork",
+      "to": "serverIssue",
+      "fromEdge": "right",
+      "toEdge": "left"
+    },
+    {
+      "from": "serverIssue",
+      "to": "networkRetry",
+      "fromEdge": "right",
+      "toEdge": "left"
+    },
+
+    {
+      "from": "checkConsole",
+      "to": "frontendIssue",
+      "fromEdge": "right",
+      "toEdge": "left"
+    },
+    {
+      "from": "frontendIssue",
+      "to": "cssProblem",
+      "fromEdge": "right",
+      "toEdge": "left"
+    },
+    {
+      "from": "cssProblem",
+      "to": "fixStyles",
+      "fromEdge": "right",
+      "toEdge": "left"
+    },
+    {
+      "from": "cssProblem",
+      "to": "checkState",
+      "fromEdge": "bottom",
+      "toEdge": "top"
+    },
+    {
+      "from": "checkState",
+      "to": "fixState",
+      "fromEdge": "right",
+      "toEdge": "left"
+    },
+
+    {
+      "from": "fixCode",
+      "to": "success",
+      "fromEdge": "right",
+      "toEdge": "left"
+    },
+    {
+      "from": "networkRetry",
+      "to": "success",
+      "fromEdge": "right",
+      "toEdge": "left"
+    },
+    {
+      "from": "fixStyles",
+      "to": "success",
+      "fromEdge": "right",
+      "toEdge": "left"
+    },
+    {
+      "from": "fixState",
+      "to": "success",
+      "fromEdge": "right",
+      "toEdge": "left"
+    }
+  ]
+}

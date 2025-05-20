@@ -1,8 +1,8 @@
-import { Rect, FabricText, Group, Triangle, Line, Circle } from "fabric";
+import { Rect, Textbox, Group, Triangle, Line, Circle } from "fabric";
 import { getAngleBetweenPoints } from "../utils/utils.js";
 import { CircleConfigDefault } from "../constants/constants.js";
 
-export function createNode(text, left, top, width = 120, height = 60) {
+export function createNode(text, type, left, top, width = 120, height = 60) {
   // Create the base rectangle.
   const rect = new Rect({
     width: width,
@@ -15,13 +15,24 @@ export function createNode(text, left, top, width = 120, height = 60) {
   });
 
   // Create a text label, positioning it at the center of the rect.
-  const label = new FabricText(text, {
+  // const label = new FabricText(text, {
+  //   fontSize: 16,
+  //   fill: "black",
+  //   originX: "center",
+  //   originY: "center",
+  //   left: rect.width / 2,
+  //   top: rect.height / 2,
+  // });
+
+  const label = new Textbox(`${type}\n${text}`, {
     fontSize: 16,
     fill: "black",
+    width: rect.width - 20, // Adjust width to fit inside the rectangle
+    textAlign: "center",
     originX: "center",
     originY: "center",
-    left: rect.width / 2,
-    top: rect.height / 2,
+    left: rect.left + rect.width / 2,
+    top: rect.top + rect.height / 2,
   });
 
   // Group them together.

@@ -1,63 +1,103 @@
 {
   "nodes": [
-    { "id": "start", "label": "Start 🔑", "x": 100, "y": 100 },
+    {
+      "id": "start",
+      "type": "🔑",
+      "label": "Start",
+      "x": 100,
+      "y": 100,
+      "height": 80
+    },
     {
       "id": "userInput",
-      "label": "User Enters Credentials 👤",
+      "type": "👤",
+      "label": "User Enters Credentials",
       "x": 300,
-      "y": 100
+      "y": 100,
+      "height": 80
     },
     {
       "id": "validateInput",
-      "label": "Validate Credentials 🔍",
+      "type": "🔍",
+      "label": "Validate Credentials",
       "x": 500,
-      "y": 100
+      "y": 100,
+      "height": 80
     },
     {
       "id": "checkExisting",
-      "label": "Check Existing Account 📂",
+      "type": "📂",
+      "label": "Check Existing Account",
       "x": 700,
-      "y": 100
+      "y": 100,
+      "height": 80
     },
-    { "id": "accountExists", "label": "Account Found ✅", "x": 900, "y": 100 },
-    { "id": "accountNotFound", "label": "No Account ❌", "x": 900, "y": 250 },
+    {
+      "id": "accountExists",
+      "type": "✅",
+      "label": "Account Found",
+      "x": 900,
+      "y": 100,
+      "height": 80
+    },
+    {
+      "id": "accountNotFound",
+      "type": "❌",
+      "label": "No Account",
+      "x": 900,
+      "y": 250,
+      "height": 80
+    },
     {
       "id": "registerUser",
-      "label": "Register New Account 📝",
+      "type": "📝",
+      "label": "Register New Account",
       "x": 1100,
-      "y": 250
+      "y": 250,
+      "height": 80
     },
     {
       "id": "passwordCorrect",
-      "label": "Password Correct 🔑",
+      "type": "🔑",
+      "label": "Password Correct",
       "x": 1100,
-      "y": 100
+      "y": 100,
+      "height": 80
     },
     {
       "id": "passwordIncorrect",
-      "label": "Wrong Password 🚨",
+      "type": "🚨",
+      "label": "Wrong Password",
       "x": 1100,
-      "y": 400
+      "y": 400,
+      "height": 80
     },
     {
       "id": "showError",
-      "label": "Show Error Message ❗",
+      "type": "❗",
+      "label": "Show Error Message",
       "x": 1300,
-      "y": 400
+      "y": 400,
+      "height": 80
     },
     {
       "id": "accountCreated",
-      "label": "Account Created 🎉",
+      "type": "🎉",
+      "label": "Account Created",
       "x": 1300,
-      "y": 250
+      "y": 250,
+      "height": 80
     },
     {
       "id": "loginSuccess",
-      "label": "Login Successful 🏁",
+      "type": "🏁",
+      "label": "Login Successful",
       "x": 1300,
-      "y": 100
+      "y": 100,
+      "height": 80
     }
   ],
+
   "connections": [
     {
       "from": "start",

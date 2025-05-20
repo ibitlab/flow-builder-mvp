@@ -1,0 +1,234 @@
+{
+  "nodes": [
+    {
+      "id": "workCheck",
+      "type": "❓",
+      "label": "Is there work to do?",
+      "x": 100,
+      "y": 500,
+      "height": 100
+    },
+    {
+      "id": "noWork",
+      "type": "😎",
+      "label": "No work? Enjoy free time!",
+      "x": 300,
+      "y": 350,
+      "height": 100
+    },
+    {
+      "id": "hasWork",
+      "type": "💼",
+      "label": "Work exists",
+      "x": 300,
+      "y": 650,
+      "height": 100
+    },
+    {
+      "id": "motivated",
+      "type": "💪",
+      "label": "Get to work now!",
+      "x": 500,
+      "y": 500,
+      "height": 100
+    },
+    {
+      "id": "notMotivated",
+      "type": "🐌",
+      "label": "Not motivated",
+      "x": 500,
+      "y": 700,
+      "height": 100
+    },
+    {
+      "id": "finishQuick",
+      "type": "✅",
+      "label": "Finish work on time",
+      "x": 700,
+      "y": 500,
+      "height": 100
+    },
+    {
+      "id": "chooseProcrastination",
+      "type": "⏰",
+      "label": "What do you do to procrastinate?",
+      "x": 700,
+      "y": 700,
+      "height": 100
+    },
+    {
+      "id": "scrollSocial",
+      "type": "📱",
+      "label": "Scroll Social Media",
+      "x": 900,
+      "y": 600,
+      "height": 100
+    },
+    {
+      "id": "watchVideos",
+      "type": "🎥",
+      "label": "Watch Videos",
+      "x": 1000,
+      "y": 700,
+      "height": 100
+    },
+    {
+      "id": "checkEmails",
+      "type": "✉️",
+      "label": "Check Emails",
+      "x": 1100,
+      "y": 800,
+      "height": 100
+    },
+    {
+      "id": "takeNap",
+      "type": "😴",
+      "label": "Take a Nap",
+      "x": 1000,
+      "y": 900,
+      "height": 100
+    },
+    {
+      "id": "makeSnack",
+      "type": "🍕",
+      "label": "Make a Snack",
+      "x": 900,
+      "y": 800,
+      "height": 100
+    },
+    {
+      "id": "deadlineRealization",
+      "type": "⏰",
+      "label": "Realize deadline is near",
+      "x": 1300,
+      "y": 800,
+      "height": 100
+    },
+    {
+      "id": "panic",
+      "type": "😱",
+      "label": "Panic and rush work",
+      "x": 1500,
+      "y": 800,
+      "height": 100
+    },
+    {
+      "id": "finishLastMinute",
+      "type": "🏁",
+      "label": "Finish at the last minute",
+      "x": 1700,
+      "y": 800,
+      "height": 100
+    }
+  ],
+  "connections": [
+    {
+      "from": "workCheck",
+      "to": "noWork",
+      "fromEdge": "right",
+      "toEdge": "left"
+    },
+    {
+      "from": "workCheck",
+      "to": "hasWork",
+      "fromEdge": "bottom",
+      "toEdge": "top"
+    },
+    {
+      "from": "hasWork",
+      "to": "motivated",
+      "fromEdge": "top",
+      "toEdge": "bottom"
+    },
+    {
+      "from": "hasWork",
+      "to": "notMotivated",
+      "fromEdge": "bottom",
+      "toEdge": "top"
+    },
+    {
+      "from": "motivated",
+      "to": "finishQuick",
+      "fromEdge": "right",
+      "toEdge": "left"
+    },
+    {
+      "from": "notMotivated",
+      "to": "chooseProcrastination",
+      "fromEdge": "right",
+      "toEdge": "left"
+    },
+    {
+      "from": "chooseProcrastination",
+      "to": "scrollSocial",
+      "fromEdge": "right",
+      "toEdge": "left"
+    },
+    {
+      "from": "chooseProcrastination",
+      "to": "watchVideos",
+      "fromEdge": "right",
+      "toEdge": "left"
+    },
+    {
+      "from": "chooseProcrastination",
+      "to": "checkEmails",
+      "fromEdge": "right",
+      "toEdge": "left"
+    },
+    {
+      "from": "chooseProcrastination",
+      "to": "takeNap",
+      "fromEdge": "right",
+      "toEdge": "left"
+    },
+    {
+      "from": "chooseProcrastination",
+      "to": "makeSnack",
+      "fromEdge": "right",
+      "toEdge": "left"
+    },
+    {
+      "from": "scrollSocial",
+      "to": "deadlineRealization",
+      "fromEdge": "right",
+      "toEdge": "left"
+    },
+    {
+      "from": "watchVideos",
+      "to": "deadlineRealization",
+      "fromEdge": "right",
+      "toEdge": "left"
+    },
+    {
+      "from": "checkEmails",
+      "to": "deadlineRealization",
+      "fromEdge": "right",
+      "toEdge": "left"
+    },
+    {
+      "from": "takeNap",
+      "to": "deadlineRealization",
+      "fromEdge": "right",
+      "toEdge": "left"
+    },
+    {
+      "from": "makeSnack",
+      "to": "deadlineRealization",
+      "fromEdge": "right",
+      "toEdge": "left"
+    },
+    {
+      "from": "deadlineRealization",
+      "to": "panic",
+      "fromEdge": "right",
+      "toEdge": "left"
+    },
+    {
+      "from": "panic",
+      "to": "finishLastMinute",
+      "fromEdge": "right",
+      "toEdge": "left"
+    }
+  ]
+}
