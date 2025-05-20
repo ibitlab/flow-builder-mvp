@@ -17,6 +17,7 @@ import { FlowchartConnectionManager } from "./FlowchartConnectionManager.js";
 
 import {
   ConnectionPointDiam,
+  Edge,
   ItemBehaviorType,
   SpaceToConnectionPointCenter,
 } from "../constants/constants.js";
@@ -410,6 +411,32 @@ export class FlowchartManager {
       );
     });
   }
+}
+
+export function loadFlowchartNodes(json, flowchart) {
+  const items = {};
+
+  json.nodes.forEach((node) => {
+    items[node.id] = flowchart.createItem(null, node.label, node.x, node.y);
+  });
+
+  return items; // Store and return created items for later connections
+}
+
+export function loadFlowchartConnections(json, flowchart, items) {
+  json.connections.forEach((connection) => {
+    flowchart.connectItems(
+      items[connection.from],
+      items[connection.to],
+      Edge[connection.fromEdge.toUpperCase()],
+      Edge[connection.toEdge.toUpperCase()]
+    );
+  });
+}
+
+export function LoadItemsFromJSON(flowchart, flowchartData) {
+  const items = loadFlowchartNodes(flowchartData, flowchart);
+  loadFlowchartConnections(flowchartData, flowchart, items);
 }
 
 // this.canvas.on("mouse:down", (event) => {

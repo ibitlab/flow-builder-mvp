@@ -1,0 +1,135 @@
+{
+  "nodes": [
+    { "id": "start", "label": "Start 🔑", "x": 100, "y": 100 },
+    {
+      "id": "userInput",
+      "label": "User Enters Credentials 👤",
+      "x": 300,
+      "y": 100
+    },
+    {
+      "id": "validateInput",
+      "label": "Validate Credentials 🔍",
+      "x": 500,
+      "y": 100
+    },
+    {
+      "id": "checkExisting",
+      "label": "Check Existing Account 📂",
+      "x": 700,
+      "y": 100
+    },
+    { "id": "accountExists", "label": "Account Found ✅", "x": 900, "y": 100 },
+    { "id": "accountNotFound", "label": "No Account ❌", "x": 900, "y": 250 },
+    {
+      "id": "registerUser",
+      "label": "Register New Account 📝",
+      "x": 1100,
+      "y": 250
+    },
+    {
+      "id": "passwordCorrect",
+      "label": "Password Correct 🔑",
+      "x": 1100,
+      "y": 100
+    },
+    {
+      "id": "passwordIncorrect",
+      "label": "Wrong Password 🚨",
+      "x": 1100,
+      "y": 400
+    },
+    {
+      "id": "showError",
+      "label": "Show Error Message ❗",
+      "x": 1300,
+      "y": 400
+    },
+    {
+      "id": "accountCreated",
+      "label": "Account Created 🎉",
+      "x": 1300,
+      "y": 250
+    },
+    {
+      "id": "loginSuccess",
+      "label": "Login Successful 🏁",
+      "x": 1300,
+      "y": 100
+    }
+  ],
+  "connections": [
+    {
+      "from": "start",
+      "to": "userInput",
+      "fromEdge": "right",
+      "toEdge": "left"
+    },
+    {
+      "from": "userInput",
+      "to": "validateInput",
+      "fromEdge": "right",
+      "toEdge": "left"
+    },
+    {
+      "from": "validateInput",
+      "to": "checkExisting",
+      "fromEdge": "right",
+      "toEdge": "left"
+    },
+    {
+      "from": "checkExisting",
+      "to": "accountExists",
+      "fromEdge": "right",
+      "toEdge": "left"
+    },
+    {
+      "from": "checkExisting",
+      "to": "accountNotFound",
+      "fromEdge": "bottom",
+      "toEdge": "top"
+    },
+    {
+      "from": "accountExists",
+      "to": "passwordCorrect",
+      "fromEdge": "right",
+      "toEdge": "left"
+    },
+    {
+      "from": "accountExists",
+      "to": "passwordIncorrect",
+      "fromEdge": "bottom",
+      "toEdge": "top"
+    },
+    {
+      "from": "passwordCorrect",
+      "to": "loginSuccess",
+      "fromEdge": "right",
+      "toEdge": "left"
+    },
+    {
+      "from": "passwordIncorrect",
+      "to": "showError",
+      "fromEdge": "right",
+      "toEdge": "left"
+    },
+    {
+      "from": "accountNotFound",
+      "to": "registerUser",
+      "fromEdge": "right",
+      "toEdge": "left"
+    },
+    {
+      "from": "registerUser",
+      "to": "accountCreated",
+      "fromEdge": "right",
+      "toEdge": "left"
+    },
+    {
+      "from": "accountCreated",
+      "to": "loginSuccess",
+      "fromEdge": "top",
+      "toEdge": "bottom"
+    }
+  ]
+}
