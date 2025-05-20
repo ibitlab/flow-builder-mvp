@@ -1,5 +1,7 @@
 import { Line, Circle } from "fabric";
-import { CircleConfigDefault } from "./const.js";
+import { CircleConfigDefault } from "../constants/constants.js";
+
+// TODO split it and move out
 
 export const Edge = {
   TOP: "top",

@@ -7,7 +7,7 @@ import {
   isInsideTargetZone,
   findClosestBluePoint,
   removeItem,
-} from "./utils.js";
+} from "../utils/utils.js";
 
 import { FlowchartItem } from "./FlowchartItem.js";
 import { FlowchartConnection } from "./FlowchartConnection.js";
@@ -18,7 +18,10 @@ import {
   isFlowChartItemNode,
   ItemBehaviorType,
 } from "./FlowchartSideConnectionPointsUtils.js";
-import { ConnectionPointDiam, SpaceToConnectionPointCenter } from "./const.js";
+import {
+  ConnectionPointDiam,
+  SpaceToConnectionPointCenter,
+} from "../constants/constants.js";
 
 const chartDefaultConfig = {
   selection: true,

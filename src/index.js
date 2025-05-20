@@ -1,5 +1,5 @@
-import "./global.css";
-import { FlowchartManager } from "./FlowchartManager.js";
+import "./styles/global.css";
+import { FlowchartManager } from "./flowchart/FlowchartManager.js";
 
 const chartConfig = {
   backgroundColor: "#f0f0f0",

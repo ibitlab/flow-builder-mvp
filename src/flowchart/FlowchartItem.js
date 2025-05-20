@@ -1,5 +1,5 @@
-import { SpaceToConnectionPointCenter } from "./const.js";
-import { createNode } from "./fabricUtils.js";
+import { SpaceToConnectionPointCenter } from "../constants/constants.js";
+import { createNode } from "../fabric-components/fabricUtils.js";
 import { getEdgePositions } from "./FlowchartSideConnectionPointsUtils.js";
 
 export class FlowchartItem {

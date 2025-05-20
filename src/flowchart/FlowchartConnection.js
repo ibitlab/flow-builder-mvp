@@ -1,5 +1,5 @@
-import { getAngleBetweenPoints } from "./utils.js";
-import { createConnectionElements } from "./FlowchartConnectionUtils.js";
+import { createConnectionElements } from "../fabric-components/fabricUtils.js";
+import { getAngleBetweenPoints } from "../utils/utils.js";
 
 export class FlowchartConnection {
   constructor(fromItem, toItem, fromEdge, toEdge) {
