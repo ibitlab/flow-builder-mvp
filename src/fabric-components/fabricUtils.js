@@ -2,11 +2,11 @@ import { Rect, FabricText, Group, Triangle, Line, Circle } from "fabric";
 import { getAngleBetweenPoints } from "../utils/utils.js";
 import { CircleConfigDefault } from "../constants/constants.js";
 
-export function createNode(text, width, height, left, top) {
+export function createNode(text, left, top, width = 120, height = 60) {
   // Create the base rectangle.
   const rect = new Rect({
-    width: 120,
-    height: 60,
+    width: width,
+    height: height,
     fill: "lightblue",
     stroke: "black",
     strokeWidth: 2,

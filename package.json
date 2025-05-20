@@ -11,7 +11,8 @@
   },
   "type": "module",
   "dependencies": {
-    "fabric": "^6.6.4"
+    "fabric": "^6.6.4",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.27.1",

@@ -1,18 +1,18 @@
-import { Canvas, Line } from "fabric";
+import { Canvas } from "fabric";
+import { v4 as uuidv4 } from "uuid";
 import * as styles from "./styles.module.css";
 
 import {
   getDistance,
   getCenter,
   isInsideTargetZone,
-  findClosestBluePoint,
+  // findClosestBluePoint,
   removeItem,
   isConnectionPoint,
   isFlowChartItemNode,
 } from "../utils/utils.js";
 
 import { FlowchartItem } from "./FlowchartItem.js";
-import { FlowchartConnection } from "./FlowchartConnection.js";
 import { FlowchartConnectionManager } from "./FlowchartConnectionManager.js";
 
 import {
@@ -37,8 +37,6 @@ export class FlowchartManager {
       canvasId,
       Object.assign(chartDefaultConfig, config)
     );
-
-    console.log(JSON.stringify(this.canvas.toJSON()));
 
     this.items = [];
     this.connectionManager = new FlowchartConnectionManager(this);
@@ -104,8 +102,9 @@ export class FlowchartManager {
   }
 
   // Create a node using the FlowchartItem class.
-  createItem(text, left, top) {
-    const item = new FlowchartItem(text, left, top);
+  createItem(id, text, left, top, width, height) {
+    const itemId = id || uuidv4();
+    const item = new FlowchartItem(itemId, text, left, top, width, height);
     this.addItem(item);
     return item;
   }
@@ -146,7 +145,6 @@ export class FlowchartManager {
 
     if (isConnectionPoint(e.target)) {
       const connectionCircle = e.target;
-      console.log("connectionCircle.edge=", connectionCircle.edge);
       const sideConnectionPoints = connectionCircle?.sideConnectionPoints;
       if (sideConnectionPoints.itemBehaviorType === ItemBehaviorType.START) {
         // TODO review it needs
@@ -191,11 +189,6 @@ export class FlowchartManager {
 
       if (isConnectionPoint(e.target)) {
         const targetConnectionCircle = e.target;
-
-        console.log(
-          "targetConnectionCircle.edge=",
-          targetConnectionCircle.edge
-        );
 
         const sideConnectionPoints =
           targetConnectionCircle?.sideConnectionPoints;
@@ -377,36 +370,36 @@ export class FlowchartManager {
   }
 
   // TODO rework it. we need support 4 points
-  connectItems(fromItem, toItem) {
-    // Find the closest blue connection point on the target node.
-    const closestPoint = findClosestBluePoint(toItem.node);
+  connectItems(fromItem, toItem, fromEdge, toEdge) {
+    this.connectionManager.addConnection(fromItem, toItem, fromEdge, toEdge);
+    // // Find the closest blue connection point on the target node.
+    // const closestPoint = findClosestBluePoint(toItem.node);
 
-    if (!closestPoint) {
-      console.warn("No valid connection point found.");
-      return;
-    }
+    // if (!closestPoint) {
+    //   console.warn("No valid connection point found.");
+    //   return;
+    // }
 
-    // Create a temporary line.
-    const tempLine = new Line(
-      [
-        fromItem.left + 60,
-        fromItem.top + 30,
-        closestPoint.left,
-        closestPoint.top,
-      ],
-      {
-        stroke: "black",
-        strokeWidth: 2,
-        selectable: false,
-      }
-    );
-    this.canvas.add(tempLine);
+    // // Create a temporary line.
+    // const tempLine = new Line(
+    //   [
+    //     fromItem.left + 60,
+    //     fromItem.top + 30,
+    //     closestPoint.left,
+    //     closestPoint.top,
+    //   ],
+    //   {
+    //     stroke: "black",
+    //     strokeWidth: 2,
+    //     selectable: false,
+    //   }
+    // );
+    // this.canvas.add(tempLine);
 
-    // Use the FlowchartConnection class to finalize the connection.
-    new FlowchartConnection(this, fromItem, toItem, tempLine, closestPoint);
+    // // Use the FlowchartConnection class to finalize the connection.
+    // new FlowchartConnection(this, fromItem, toItem, tempLine, closestPoint);
   }
 
-  // isHoveringNearSomeItem(event) {
   getNearestItem(event) {
     const pointer = this.canvas.getPointer(event.e);
     return (this.items || []).find((item) => {
