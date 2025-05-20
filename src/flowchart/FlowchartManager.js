@@ -1,4 +1,4 @@
-import { Canvas } from "fabric";
+import { Canvas, Textbox, Point } from "fabric";
 import { v4 as uuidv4 } from "uuid";
 import * as styles from "./styles.module.css";
 
@@ -55,6 +55,9 @@ export class FlowchartManager {
     this.onSelectionCreated = this.onSelectionCreated.bind(this);
     this.onSelectionCleared = this.onSelectionCleared.bind(this);
 
+    this.edit = this.edit.bind(this);
+    // this.editingExited = this.editingExited.bind(this);
+
     this.onKeydown = this.onKeydown.bind(this);
     this.attachEvents();
 
@@ -73,6 +76,8 @@ export class FlowchartManager {
     this.canvas.on("object:scaling", this.onObjectScaling);
     this.canvas.on("selection:created", this.onSelectionCreated);
     this.canvas.on("selection:cleared", this.onSelectionCleared);
+
+    this.canvas.on("mouse:dblclick", this.edit);
   }
 
   // Clean up and remove node properly
@@ -86,6 +91,60 @@ export class FlowchartManager {
     this.canvas.off("selection:created", this.onSelectionCreated);
     this.canvas.off("selection:cleared", this.onSelectionCleared);
     document.removeEventListener("keydown", this.onKeydown);
+  }
+
+  edit(opt) {
+    const target = opt.target;
+
+    if (target && target.type === "group") {
+      const textObj = target.item(1); // Assuming text is the second item in the group
+
+      textObj.set("visible", false); // Update original text inside the group
+
+      // Compute absolute position using the new `Point.transform` method
+      const groupMatrix = target.calcTransformMatrix();
+      const transformedCoords = new Point(textObj.left, textObj.top).transform(
+        groupMatrix
+      );
+
+      // Create a temporary editable textbox
+      const tempTextbox = new Textbox(textObj.text, {
+        fontSize: textObj.fontSize,
+        fill: textObj.fill,
+        left: transformedCoords.x,
+        top: transformedCoords.y,
+        width: textObj.width || 200,
+        editable: true,
+        textAlign: textObj.textAlign,
+        originX: textObj.originX,
+        originY: textObj.originY,
+      });
+
+      this.canvas.add(tempTextbox);
+      this.canvas.setActiveObject(tempTextbox);
+
+      // Listen for when the user exits editing mode
+      tempTextbox.on("editing:exited", () => {
+        this.editingExited.call(this, textObj, tempTextbox);
+      });
+
+      tempTextbox.enterEditing();
+    }
+  }
+
+  editingExited(textObj, tempTextbox) {
+    console.log(
+      "editingExited",
+      textObj.text,
+      tempTextbox.text,
+      textObj,
+      tempTextbox
+    );
+    textObj.set("text", tempTextbox.text);
+    textObj.set("visible", true);
+
+    this.canvas.remove(tempTextbox); // Remove temporary textbox
+    this.canvas.renderAll();
   }
 
   addItem(item) {
