@@ -67,14 +67,25 @@ export function createConnectionElements(
     { x: toEdgePosition.x, y: toEdgePosition.y }
   );
 
+  // TODO move out
+  // const ArrowHeight = 16;
+
+  // // Adjust position dynamically based on rotation
+  // const angleRad = util.degreesToRadians(angle);
+  // console.log("angleRad==", angleRad);
+  // const offsetX = Math.sin(angleRad) * (ArrowHeight / 2);
+  // const offsetY = Math.cos(angleRad) * (ArrowHeight / 2);
+
   that.arrow = new Triangle({
     left: toEdgePosition.x,
     top: toEdgePosition.y,
+    // left: toEdgePosition.x - offsetX,
+    // top: toEdgePosition.y - offsetY,
     width: 12,
     height: 16,
     fill: "black",
     originX: "center",
-    originY: "center",
+    originY: "top",
     angle: angle,
     selectable: false,
     lockScalingX: true,
