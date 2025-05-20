@@ -1,3 +1,5 @@
+import { Edge } from "../constants/constants.js";
+
 /**
  * Calculate the Euclidean distance between two points.
  * @param {Object} p1 - An object with x and y properties.
@@ -84,3 +86,45 @@ export function removeItem(arr, value) {
   }
   return arr;
 }
+
+// for now, we support 4 points on sides for all items types
+export const getEdgePositions = (bounds, space = 5) => {
+  // const edges = Object.fromEntries(
+  //   Object.entries(Edge).map(([key, value]) => [value, key])
+  // );
+
+  return [
+    {
+      x: bounds.left + bounds.width / 2,
+      y: bounds.top - space,
+      edge: Edge.TOP,
+      space,
+    },
+    {
+      x: bounds.left - space,
+      y: bounds.top + bounds.height / 2,
+      edge: Edge.LEFT,
+      space,
+    },
+    {
+      x: bounds.left + bounds.width + space,
+      y: bounds.top + bounds.height / 2,
+      edge: Edge.RIGHT,
+      space,
+    },
+    {
+      x: bounds.left + bounds.width / 2,
+      y: bounds.top + bounds.height + space,
+      edge: Edge.BOTTOM,
+      space,
+    },
+  ];
+};
+
+export const isConnectionPoint = (obj) => {
+  return obj?.edge && obj?.sideConnectionPoints;
+};
+
+export const isFlowChartItemNode = (obj) => {
+  return obj?.flowchartItem;
+};

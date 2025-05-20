@@ -1,5 +1,6 @@
-import { Rect, FabricText, Group, Triangle, Line } from "fabric";
+import { Rect, FabricText, Group, Triangle, Line, Circle } from "fabric";
 import { getAngleBetweenPoints } from "../utils/utils.js";
+import { CircleConfigDefault } from "../constants/constants.js";
 
 export function createNode(text, width, height, left, top) {
   // Create the base rectangle.
@@ -73,3 +74,42 @@ export function createConnectionElements(
     selectable: false,
   });
 }
+
+export const createLine = (pointer) => {
+  return new Line([pointer.x, pointer.y, pointer.x, pointer.y], {
+    stroke: "black",
+    strokeWidth: 2,
+    selectable: false,
+  });
+};
+
+export const createCircle = (pt) => {
+  const circle = new Circle({
+    ...CircleConfigDefault,
+    left: pt.x,
+    top: pt.y,
+    selectable: false, // not draggable/selected
+    evented: true, // allow clicks (for starting a connection)
+    originX: "center",
+    originY: "center",
+  });
+
+  // // Hover animation
+  // circle.on("mouseover", () => {
+  //   circle.set({
+  //     radius: 7, // Slightly increase size
+  //     fill: "white", // Make it just a border
+  //   });
+  //   circle.canvas.renderAll(); // Update canvas
+  // });
+
+  // circle.on("mouseout", () => {
+  //   circle.set({
+  //     radius: 5, // Restore original size
+  //     fill: "red", // Restore original fill
+  //   });
+  //   circle.canvas.renderAll();
+  // });
+
+  return circle;
+};

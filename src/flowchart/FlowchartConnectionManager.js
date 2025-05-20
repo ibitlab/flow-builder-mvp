@@ -1,6 +1,6 @@
+import { ItemBehaviorType } from "../constants/constants.js";
 import { FlowchartConnection } from "./FlowchartConnection.js";
 import { FlowchartSideConnectionPoints } from "./FlowchartSideConnectionPoints.js";
-import { ItemBehaviorType } from "./FlowchartSideConnectionPointsUtils.js";
 
 export class FlowchartConnectionManager {
   constructor(manager) {
@@ -20,28 +20,7 @@ export class FlowchartConnectionManager {
 
   destroy() {}
 
-  // addConnection(fromNode, targetNode, line, targetPoint) {
-  //   // fromNode ?? this.connectionManager.connectionStartCircle
-  //   // TODO remove line, it should be created based on start/end points
-  //   const conn = new FlowchartConnection(
-  //     fromNode,
-  //     targetNode,
-  //     line,
-  //     targetPoint
-  //   );
-
-  //   // TODO create methods for canvas, wrapper
-  //   this.manager.canvas.add(conn.line);
-  //   this.manager.canvas.add(conn.arrow);
-  //   this.manager.canvas.sendObjectToBack(conn.line);
-  //   this.manager.canvas.sendObjectToBack(conn.arrow);
-  //   // Save the connection.
-  //   this.connections.push(conn);
-  // }
-
   addConnection(fromItem, toItem, fromEdge, toEdge) {
-    // fromNode ?? this.connectionManager.connectionStartCircle
-    // TODO remove line, it should be created based on start/end points
     const conn = new FlowchartConnection(fromItem, toItem, fromEdge, toEdge);
 
     // TODO create methods for canvas, wrapper
@@ -54,31 +33,13 @@ export class FlowchartConnectionManager {
   }
 
   updateConnections() {
-    // TODO add support edge connections
     this.connections.forEach((conn) => {
       conn.updateConnectionElementsPositions();
-      // if (conn.from === movedObject || conn.to === movedObject) {
-      //   conn.line.set({
-      //     x1: conn.from.left + 60,
-      //     y1: conn.from.top + 30,
-      //     x2: conn.to.left + 60,
-      //     y2: conn.to.top + 30,
-      //   });
-      //   conn.line.setCoords();
-      //   // Update arrow position.
-      //   conn.arrow.set({
-      //     left: conn.to.left + 60,
-      //     top: conn.to.top + 30,
-      //     angle: getAngleBetweenPoints(conn.from, conn.to),
-      //   });
-      //   conn.arrow.setCoords();
-      // }
     });
     this.manager.canvas.requestRenderAll();
   }
 
   showStartConnectionPoints(item) {
-    // console.error("showStartConnectionPoints");
     if (this.startSideConnectionPoints) {
       console.error("showStartConnectionPoints on existing starts node");
       this.hideStartConnectionPoints();
@@ -96,7 +57,6 @@ export class FlowchartConnectionManager {
   }
 
   showTargetConnectionPoints(item) {
-    // console.error("showTargetConnectionPoints");
     if (this.targetSideConnectionPoints) {
       console.error("showTargetConnectionPoints on existing targets node");
       this.hideTargetConnectionPoints();

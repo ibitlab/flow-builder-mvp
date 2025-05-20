@@ -52,45 +52,4 @@ export class FlowchartConnection {
     });
     this.arrow.setCoords();
   }
-
-  // createConnectionElements(fromEdgePosition, toEdgePosition) {
-  //   this.line = new Line(
-  //     [
-  //       fromEdgePosition.x,
-  //       fromEdgePosition.y,
-  //       toEdgePosition.x,
-  //       toEdgePosition.y,
-  //     ],
-  //     {
-  //       stroke: "black",
-  //       strokeWidth: 2,
-  //     }
-  //   );
-
-  //   // this.line = line;
-  //   // Snap the connection end to the closest blue point.
-  //   // this.line.set({
-  //   //   x2: targetPoint.left,
-  //   //   y2: targetPoint.top,
-  //   // });
-  //   // this.line.setCoords();
-
-  //   // Create the arrowhead.
-  //   const angle = getAngleBetweenPoints(
-  //     { x: fromEdgePosition.x, y: fromEdgePosition.y },
-  //     { x: toEdgePosition.x, y: toEdgePosition.y }
-  //   );
-
-  //   this.arrow = new Triangle({
-  //     left: toEdgePosition.x,
-  //     top: toEdgePosition.y,
-  //     width: 12,
-  //     height: 16,
-  //     fill: "black",
-  //     originX: "center",
-  //     originY: "center",
-  //     angle: angle,
-  //     selectable: false,
-  //   });
-  // }
 }

@@ -7,21 +7,20 @@ import {
   isInsideTargetZone,
   findClosestBluePoint,
   removeItem,
+  isConnectionPoint,
+  isFlowChartItemNode,
 } from "../utils/utils.js";
 
 import { FlowchartItem } from "./FlowchartItem.js";
 import { FlowchartConnection } from "./FlowchartConnection.js";
 import { FlowchartConnectionManager } from "./FlowchartConnectionManager.js";
-import {
-  createLine,
-  isConnectionPoint,
-  isFlowChartItemNode,
-  ItemBehaviorType,
-} from "./FlowchartSideConnectionPointsUtils.js";
+
 import {
   ConnectionPointDiam,
+  ItemBehaviorType,
   SpaceToConnectionPointCenter,
 } from "../constants/constants.js";
+import { createLine } from "../fabric-components/fabricUtils.js";
 
 const chartDefaultConfig = {
   selection: true,
@@ -106,7 +105,7 @@ export class FlowchartManager {
 
   // Create a node using the FlowchartItem class.
   createItem(text, left, top) {
-    const item = new FlowchartItem(text, left, top, this);
+    const item = new FlowchartItem(text, left, top);
     this.addItem(item);
     return item;
   }
@@ -127,6 +126,8 @@ export class FlowchartManager {
     if (event.key === "Delete" || event.key === "Backspace") {
       const activeObject = this.canvas.getActiveObject();
       if (activeObject && activeObject.flowchartItem) {
+        // Delete connection Points af exist
+        this.connectionManager.hideStartConnectionPoints();
         this.deleteItem(activeObject.flowchartItem);
       }
     }

@@ -7,3 +7,15 @@ export const CircleConfigDefault = {
   stroke: "black",
   strokeWidth: 1,
 };
+
+export const Edge = {
+  TOP: "top",
+  LEFT: "left",
+  RIGHT: "right",
+  BOTTOM: "bottom",
+};
+
+export const ItemBehaviorType = {
+  START: "START",
+  TARGET: "TARGET",
+};
