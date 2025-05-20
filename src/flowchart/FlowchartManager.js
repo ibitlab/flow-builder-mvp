@@ -276,17 +276,17 @@ export class FlowchartManager {
   // Use requestAnimationFrame to update the temporary connection line smoothly.
   onMouseMove(e) {
     const pointer = this.canvas.getPointer(e.e);
-    const targets = this.canvas.findTarget(e.e, true) || [];
-    // console.log("Stacked objects under mouse:", targets);
+    const target =
+      this.canvas.findTarget(e.e, true) || this.getNearestItem(e)?.node;
 
     // no start Points
     // do not show on move!
     if (
-      isFlowChartItemNode(targets) &&
+      isFlowChartItemNode(target) &&
       !this.connectionManager.startSideConnectionPoints &&
       !this.isMovement
     ) {
-      this.connectionManager.showStartConnectionPoints(targets.flowchartItem);
+      this.connectionManager.showStartConnectionPoints(target.flowchartItem);
     }
 
     // check if mouse on Node or near connection points, then continue show start, else hide with debounce
@@ -298,8 +298,7 @@ export class FlowchartManager {
       // started draw line
       // draw line in progress
       if (
-        this.connectionManager.startSideConnectionPoints.item.node ===
-          targets ||
+        this.connectionManager.startSideConnectionPoints.item.node === target ||
         isInsideTargetZone(
           pointer,
           this.connectionManager.startSideConnectionPoints.item.node,
@@ -349,10 +348,6 @@ export class FlowchartManager {
               SpaceToConnectionPointCenter + ConnectionPointDiam
             )
           ) {
-            // const bounds = node.getBoundingRect();
-            // const centerX = bounds.left + bounds.width / 2;
-            // const centerY = bounds.top + bounds.height / 2;
-            // const dist = Math.hypot(pointer.x - centerX, pointer.y - centerY);
             const center = getCenter(node);
             const dist = getDistance(pointer, center);
             if (dist < minDist) {
@@ -365,17 +360,13 @@ export class FlowchartManager {
         if (
           closestTarget &&
           !this.connectionManager.targetSideConnectionPoints
-          //?.connectionPointsElements?.length === 0
         ) {
-          // this.currentTargetBluePoints =
-          // this.showTargetConnectionPoints(closestTarget);
           this.connectionManager.showTargetConnectionPoints(
             closestTarget.flowchartItem
           );
         } else if (
           !closestTarget &&
           this.connectionManager.targetSideConnectionPoints
-          // ?.connectionPointsElements?.length > 0
         ) {
           this.connectionManager.hideTargetConnectionPoints();
         }
@@ -414,22 +405,19 @@ export class FlowchartManager {
     // Use the FlowchartConnection class to finalize the connection.
     new FlowchartConnection(this, fromItem, toItem, tempLine, closestPoint);
   }
-}
 
-// A helper used by node events to check if the pointer is over one of the node's children.
-// TODO rethink
-// isHoveringOverChild(node, event) {
-//   const pointer = this.canvas.getPointer(event.e);
-//   return (node.connectionPoints || []).some((cp) => {
-//     const bounds = cp.getBoundingRect();
-//     return (
-//       pointer.x >= bounds.left &&
-//       pointer.x <= bounds.left + bounds.width &&
-//       pointer.y >= bounds.top &&
-//       pointer.y <= bounds.top + bounds.height
-//     );
-//   });
-// }
+  // isHoveringNearSomeItem(event) {
+  getNearestItem(event) {
+    const pointer = this.canvas.getPointer(event.e);
+    return (this.items || []).find((item) => {
+      return isInsideTargetZone(
+        pointer,
+        item.node,
+        SpaceToConnectionPointCenter + ConnectionPointDiam
+      );
+    });
+  }
+}
 
 // this.canvas.on("mouse:down", (event) => {
 //   const target = this.canvas.findTarget(event.e); // Get clicked object

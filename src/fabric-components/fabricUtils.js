@@ -53,6 +53,11 @@ export function createConnectionElements(
     {
       stroke: "black",
       strokeWidth: 2,
+      selectable: false,
+      lockScalingX: true,
+      lockScalingY: true,
+      lockRotation: true,
+      hasControls: false,
     }
   );
 
@@ -72,6 +77,10 @@ export function createConnectionElements(
     originY: "center",
     angle: angle,
     selectable: false,
+    lockScalingX: true,
+    lockScalingY: true,
+    lockRotation: true,
+    hasControls: false,
   });
 }
 
@@ -80,6 +89,10 @@ export const createLine = (pointer) => {
     stroke: "black",
     strokeWidth: 2,
     selectable: false,
+    lockScalingX: true,
+    lockScalingY: true,
+    lockRotation: true,
+    hasControls: false,
   });
 };
 
