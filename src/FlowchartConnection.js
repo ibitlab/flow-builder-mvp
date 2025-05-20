@@ -1,44 +1,96 @@
-import { Triangle } from "fabric";
 import { getAngleBetweenPoints } from "./utils.js";
+import { createConnectionElements } from "./FlowchartConnectionUtils.js";
 
-/* ============================
-   FlowchartConnection Class Module
-   ============================
-   Responsibilities:
-   • Encapsulate the process of finalizing a connection:
-       – snapping the temporary line to a blue target point,
-       – drawing an arrowhead,
-       – and storing the connection.
---------------------------------- */
 export class FlowchartConnection {
-  constructor(fromNode, targetNode, line, targetPoint) {
-    // TODO use targetPoint.edge to attach for correct point
-    this.from = fromNode;
-    this.to = targetNode;
-    this.line = line;
-    // Snap the connection end to the closest blue point.
+  constructor(fromItem, toItem, fromEdge, toEdge) {
+    this.fromItem = fromItem;
+    this.toItem = toItem;
+    this.fromEdge = fromEdge;
+    this.toEdge = toEdge;
+
+    // TODO extract this into utils
+    const fromEdgePosition = this.fromItem.connectionEdges?.find(
+      (item) => item.edge === this.fromEdge
+    );
+    const toEdgePosition = this.toItem.connectionEdges?.find(
+      (item) => item.edge === this.toEdge
+    );
+
+    createConnectionElements(this, fromEdgePosition, toEdgePosition);
+  }
+
+  updateConnectionElementsPositions() {
+    // TODO extract this into utils
+    const fromEdgePosition = this.fromItem.connectionEdges?.find(
+      (item) => item.edge === this.fromEdge
+    );
+    const toEdgePosition = this.toItem.connectionEdges?.find(
+      (item) => item.edge === this.toEdge
+    );
+
+    this.updateConnectionElements(fromEdgePosition, toEdgePosition);
+  }
+
+  updateConnectionElements(fromEdgePosition, toEdgePosition) {
     this.line.set({
-      x2: targetPoint.left,
-      y2: targetPoint.top,
+      x1: fromEdgePosition.x,
+      y1: fromEdgePosition.y,
+      x2: toEdgePosition.x,
+      y2: toEdgePosition.y,
     });
     this.line.setCoords();
 
-    // Create the arrowhead.
     const angle = getAngleBetweenPoints(
-      { x: this.line.x1, y: this.line.y1 },
-      { x: this.line.x2, y: this.line.y2 }
+      { x: fromEdgePosition.x, y: fromEdgePosition.y },
+      { x: toEdgePosition.x, y: toEdgePosition.y }
     );
 
-    this.arrow = new Triangle({
-      left: targetPoint.left,
-      top: targetPoint.top,
-      width: 12,
-      height: 16,
-      fill: "black",
-      originX: "center",
-      originY: "center",
+    this.arrow.set({
+      left: toEdgePosition.x,
+      top: toEdgePosition.y,
       angle: angle,
-      selectable: false,
     });
+    this.arrow.setCoords();
   }
+
+  // createConnectionElements(fromEdgePosition, toEdgePosition) {
+  //   this.line = new Line(
+  //     [
+  //       fromEdgePosition.x,
+  //       fromEdgePosition.y,
+  //       toEdgePosition.x,
+  //       toEdgePosition.y,
+  //     ],
+  //     {
+  //       stroke: "black",
+  //       strokeWidth: 2,
+  //     }
+  //   );
+
+  //   // this.line = line;
+  //   // Snap the connection end to the closest blue point.
+  //   // this.line.set({
+  //   //   x2: targetPoint.left,
+  //   //   y2: targetPoint.top,
+  //   // });
+  //   // this.line.setCoords();
+
+  //   // Create the arrowhead.
+  //   const angle = getAngleBetweenPoints(
+  //     { x: fromEdgePosition.x, y: fromEdgePosition.y },
+  //     { x: toEdgePosition.x, y: toEdgePosition.y }
+  //   );
+
+  //   this.arrow = new Triangle({
+  //     left: toEdgePosition.x,
+  //     top: toEdgePosition.y,
+  //     width: 12,
+  //     height: 16,
+  //     fill: "black",
+  //     originX: "center",
+  //     originY: "center",
+  //     angle: angle,
+  //     selectable: false,
+  //   });
+  // }
 }

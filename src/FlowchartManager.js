@@ -35,6 +35,9 @@ export class FlowchartManager {
       canvasId,
       Object.assign(chartDefaultConfig, config)
     );
+
+    console.log(JSON.stringify(this.canvas.toJSON()));
+
     this.items = [];
     this.connectionManager = new FlowchartConnectionManager(this);
 
@@ -128,14 +131,10 @@ export class FlowchartManager {
 
   onObjectScaling() {}
 
-  onObjectMoving(event) {
+  onObjectMoving() {
     this.connectionManager.hideStartConnectionPoints();
     this.connectionManager.hideTargetConnectionPoints();
-
-    const movedObject = event.target;
-    // When a node moves, update any connected lines.
-    // TBD handle multiple object movement
-    this.connectionManager.updateConnections(movedObject);
+    this.connectionManager.updateConnections();
   }
 
   onMouseDown(e) {
@@ -143,6 +142,7 @@ export class FlowchartManager {
 
     if (isConnectionPoint(e.target)) {
       const connectionCircle = e.target;
+      console.log("connectionCircle.edge=", connectionCircle.edge);
       const sideConnectionPoints = connectionCircle?.sideConnectionPoints;
       if (sideConnectionPoints.itemBehaviorType === ItemBehaviorType.START) {
         // TODO review it needs
@@ -187,17 +187,31 @@ export class FlowchartManager {
 
       if (isConnectionPoint(e.target)) {
         const targetConnectionCircle = e.target;
+
+        console.log(
+          "targetConnectionCircle.edge=",
+          targetConnectionCircle.edge
+        );
+
         const sideConnectionPoints =
           targetConnectionCircle?.sideConnectionPoints;
         if (sideConnectionPoints.itemBehaviorType === ItemBehaviorType.TARGET) {
           // Instantiate a FlowchartConnection to finalize the arrow.
+          // this.connectionManager.addConnection(
+          //   this.connectionManager.connectionStartCircle.sideConnectionPoints
+          //     .item.node,
+          //   targetConnectionCircle.sideConnectionPoints.item.node,
+          //   this.connectionManager.currentLine,
+          //   targetConnectionCircle
+          // );
           this.connectionManager.addConnection(
             this.connectionManager.connectionStartCircle.sideConnectionPoints
-              .item.node,
-            targetConnectionCircle.sideConnectionPoints.item.node,
-            this.connectionManager.currentLine,
-            targetConnectionCircle
+              .item,
+            targetConnectionCircle.sideConnectionPoints.item,
+            this.connectionManager.connectionStartCircle.edge,
+            targetConnectionCircle.edge
           );
+          this.canvas.remove(this.connectionManager.currentLine);
         }
       } else {
         // If no valid target was found, remove the temporary line.

@@ -26,7 +26,7 @@ export class FlowchartSideConnectionPoints {
     // TODO points should be get from item points
     // const bounds = this.item.node.getBoundingRect();
     // Define positions for top, left, right, and bottom.
-    const positions = this.item.connectionPoints; // getEdgePositions12323(bounds);
+    const positions = this.item.connectionEdges; // getEdgePositions12323(bounds);
     positions.forEach((pt) => {
       const circle = createCircle(pt);
 

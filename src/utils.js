@@ -66,7 +66,7 @@ export function findClosestBluePoint(node) {
   // TODO
   const nodeCenter = getCenter(node); // Using utility
 
-  node.connectionPoints.forEach((cp) => {
+  node.connectionEdges.forEach((cp) => {
     const dist = getDistance(nodeCenter, { x: cp.left, y: cp.top }); // Using utility
     if (dist < minDist) {
       minDist = dist;

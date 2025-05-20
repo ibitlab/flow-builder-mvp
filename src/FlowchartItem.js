@@ -11,8 +11,10 @@ export class FlowchartItem {
     // TODO review this
     this.node.flowchartItem = this;
 
-    this.connectionPoints = [];
-    this.prepareConnectionPoints();
+    // this.connectionPoints = [];
+    this.connectionEdges = [];
+
+    this.updateConnectionEdges();
 
     // this.onMouseover = this.onMouseover.bind(this);
     // this.onMouseOut = this.onMouseOut.bind(this);
@@ -21,12 +23,12 @@ export class FlowchartItem {
     this.attachEvents();
   }
 
-  prepareConnectionPoints() {
+  updateConnectionEdges() {
     // Prepare a property to hold our connection points.
     const bounds = this.node.getBoundingRect();
     // Define positions for top, left, right, and bottom.
     // TODO move out const
-    this.connectionPoints = getEdgePositions(
+    this.connectionEdges = getEdgePositions(
       bounds,
       SpaceToConnectionPointCenter
     );
@@ -56,7 +58,7 @@ export class FlowchartItem {
   // }
 
   onMoving() {
-    this.prepareConnectionPoints();
+    this.updateConnectionEdges();
     // this.manager.connectionManager.hideStartConnectionPoints();
     // this.manager.connectionManager.hideTargetConnectionPoints();
   }
